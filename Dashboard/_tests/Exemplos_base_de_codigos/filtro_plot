@@ -1,0 +1,39 @@
+filtros <- bs4Dash::box(
+  title = "Filtros de Dados",
+  width = 12,
+  status = "primary",
+  collapsible = TRUE,
+  collapsed = FALSE,
+  fluidRow(
+    column(
+      width = 3,
+      selectInput(
+        inputId = "uf_filter",
+        label = "Selecione o Estado:",
+        choices = c("Todos", "DF"),
+        selected = "Todos"
+      )
+    ),
+    column(width = 3),
+    column(width = 3),
+
+    column(
+      width = 3,
+      actionButton(
+        inputId = "apply_filters",  # <-- aqui
+        label = "Aplicar Filtros",
+        icon = icon("filter"),
+        class = "btn-primary",
+        width = "100%"
+      )
+    )
+  )
+),
+
+server <- function(input, output){
+  observeEvent(input$apply_filters, {
+    uf <- input$uf_filter
+    message("Filtro UF aplicado: ", uf)
+  })
+  
+}

@@ -1,0 +1,15 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+Dashboard/input/*.tsv
+*.csv
+*.tsv
+data/
+*.tsv
+*.csv
+*.dbf
+Dashboard/input/
+*.tsv
+*.csv
+*.dbf

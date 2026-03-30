@@ -1,0 +1,20 @@
+directory_of_data: ../data/17.11.2023_07h_training_data
+directory_of_model: ../results/models/14.11.2023_10h
+countries_file: country_list.txt
+country: Argentina
+country: Peru
+country: Belice
+country: Venezuela
+country: Brazil
+PREDICTION TASK ENDED !
+country: Colombia
+country: Costa Rica
+country: Ecuador
+country: El Salvador
+country: Guatemala
+country: Honduras
+country: Panama
+country: Paraguay
+country: Peru
+country: Venezuela
+PREDICTION TASK ENDED !

@@ -13,3 +13,7 @@ Dashboard/input/
 *.tsv
 *.csv
 *.dbf
+Dashboard/input/
+*.tsv
+*.csv
+*.dbf

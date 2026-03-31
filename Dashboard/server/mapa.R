@@ -95,6 +95,5 @@ estados <- read_state(code_state = "all", year = 2020, showProgress = FALSE)
         }
       ")
   })
-  
  
   

@@ -177,9 +177,9 @@ ui <- fluidPage(
       width = 1/2,
       class = "mt-3",
       card(
-          full_screen = TRUE,
-          card_header("Mapa de Casos de Dengue por Município"),
-          withSpinner(uiOutput("mapaGeral_ou_mapaBrasilia", height = "570px"), type = 6, color = "#0d6efd")
+        full_screen = TRUE,
+        card_header("Mapa de Casos de Dengue por Município"),
+        withSpinner(uiOutput("mapaGeral_ou_mapaBrasilia", height = "570px"), type = 6, color = "#0d6efd")
       ),
       card(
         full_screen = TRUE,

@@ -3,26 +3,26 @@ library(tidyverse)
 library(ribge)
 library(geobr)
 
-setwd("/home/christian/Área de trabalho/Scientific_Initiation_Dashboard/Dashboard/")
+setwd("/home/christian/Scientific_Initiation_Dashboard/Dashboard/")
 
 # Grafico 1
 dengue_data <- fread("input/2014-2025_DENGUE_CONFIRMADOS_dash_new.tsv")
 dengue_conf <- fread("input/2014-2025_DENGUE_CONFIRMADOS_dash_new.tsv")
 
 dengue_data_agre_n <- dengue_data %>%
-  group_by(months) %>%
+  group_by(weekStart) %>%
   summarise(New_Cases = sum(New_Cases)) %>%
   drop_na()
 
 dengue_data_agre_c <- dengue_conf %>%
-  group_by(months) %>%
+  group_by(weekStart) %>% 
   summarise(New_Cases = sum(New_Cases)) %>%
   drop_na()
 
-names(dengue_data_agre_n) <- c("months", "New_Cases_Noti")
-names(dengue_data_agre_c) <- c("months", "New_Cases_Conf")
+names(dengue_data_agre_n) <- c("weekStart", "New_Cases_Noti")
+names(dengue_data_agre_c) <- c("weekStart", "New_Cases_Conf")
 
-dengue_data_agre_p1 <- left_join(dengue_data_agre_n, dengue_data_agre_c, by=c("months"="months"))
+dengue_data_agre_p1 <- left_join(dengue_data_agre_n, dengue_data_agre_c, by=c("weekStart"="weekStart"))
 
 write_tsv(dengue_data_agre_p1, file = "input/plot_1.tsv")
 
@@ -92,7 +92,7 @@ conf_incidencia_mapa$incidence <- ((conf_incidencia_mapa$New_Cases / conf_incide
 write_tsv(conf_incidencia_mapa, file = "input/plot_mapa.tsv")
 
 # Grafico 4
-
+dengue_data <- dengue_data |> mutate(years = format(as.Date(weekStart), "%Y"))
 dados_plot <- dengue_data %>%
   mutate(Race_Colour = case_when(
     Race_Colour == "Branca" ~ "Branca",
@@ -194,23 +194,23 @@ centros
 
 dengue_data <- dengue_data %>%
   left_join(
-    estados %>% st_drop_geometry() %>% select(code_state, abbrev_state),
+    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
     by = c("State" = "code_state")
   )
 dengue_conf <- dengue_conf %>%
   left_join(
-    estados %>% st_drop_geometry() %>% select(code_state, abbrev_state),
+    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
     by = c("State" = "code_state")
     
   )
 
 dengue_data_agre_n <- dengue_data %>%
-  group_by(Noti_Date, abbrev_state) %>%
+  group_by(Noti_Date, abbrev_state, name_state) %>%
   summarise(New_Cases = sum(New_Cases)) %>%
   drop_na()
 
 dengue_data_agre_c <- dengue_conf %>%
-  group_by(Noti_Date, abbrev_state) %>%
+  group_by(Noti_Date, abbrev_state, name_state) %>%
   summarise(New_Cases = sum(New_Cases)) %>%
   drop_na()
 
@@ -238,5 +238,32 @@ por_regiao <- dados_dengue |>
   group_by(regiao_administrativa) |>  # nome da coluna pode variar
   summarise(total_casos = n())
 
+########################################################################
+dengue_data <- dengue_data %>%
+  left_join(
+    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
+    by = c("State" = "code_state")
+  )
 
+dengue_conf <- dengue_conf %>%
+  left_join(
+    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
+    by = c("State" = "code_state")
+  )
 
+dengue_data_agre_n <- dengue_data %>%
+  mutate(month = floor_date(weekStart, "month")) %>%
+  group_by(month, abbrev_state, name_state) %>%
+  summarise(New_Cases_Noti = sum(New_Cases, na.rm = TRUE)) %>%
+  drop_na()
+
+dengue_data_agre_c <- dengue_conf %>%
+  mutate(month = floor_date(weekStart, "month")) %>%
+  group_by(month, abbrev_state, name_state) %>%
+  summarise(New_Cases_Conf = sum(New_Cases, na.rm = TRUE)) %>%
+  drop_na()
+
+plot1 <- left_join(dengue_data_agre_n, dengue_data_agre_c,
+                   by = c("month", "abbrev_state", "name_state"))
+
+write_tsv(plot1, file = "input/plot_1.tsv")

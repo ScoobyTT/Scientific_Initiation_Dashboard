@@ -10,6 +10,8 @@ library(foreign)
 library(ribge)
 library(stringr)
 library(devtools)
+library(sf)
+library(readxl)
 # devtools::install_github("danicat/read.dbc")
 
 
@@ -86,18 +88,27 @@ if(length(fil) > 0) {
   }     
 }
 
+
 setwd(mypath)
 files_dbc <- list.files(path = mypath, pattern = ".dbc")
 files_dbf <- list.files(path = mypath, pattern = ".dbf")
 files <- setdiff(str_replace_all(files_dbc, ".dbc", ""), str_replace_all(files_dbf, ".dbf", ""))
+onlydbf <- FALSE
 
-
-for(i in 1:length(files)){
-  file <- tools::file_path_sans_ext(paste0(files[i], ".dbc"))
-  temp <- dbc2dbf(paste0(file, ".dbc"), paste0(file, ".dbf"))
-  base <- read.dbf(paste0(file, ".dbf"))
-  write.table(base, paste0(dir, "tsv/", file, ".tsv"), sep = "\t", row.names = FALSE)
-  cat(file, "ok - \n")
+for(i in 16:length(files)){
+  if (onlydbf == FALSE){
+    file <- tools::file_path_sans_ext(paste0(files[i], ".dbc"))
+    temp <- dbc2dbf(paste0(file, ".dbc"), paste0(file, ".dbf"))
+    base <- read.dbf(paste0(file, ".dbf"))
+    write.table(base, paste0(dir, "tsv/", file, ".tsv"), sep = "\t", row.names = FALSE)
+    cat(file, "ok - \n") 
+  }else{
+    file <- tools::file_path_sans_ext(paste0(files[i], "dbf"))
+    # base <- read.dbf(paste0(file, ".dbf"))
+    base <- sf::st_read(paste0(file, ".dbf"))
+    write.table(base, paste0(dir, "tsv/", file, ".tsv"), sep = "\t", row.names = FALSE)
+    cat(file, "ok - \n")
+  } 
 }
 
 # Input file name
@@ -112,11 +123,14 @@ if( dbc2dbf(input.file = paste0(files,".dbc"), output.file = output) ) {
   # do things with the file
 }
 
+
+################################
+#parte do tsv
 startFile <- 1
 myfiles <- list.files(paste0(dir, "tsv/"), pattern = paste0(SUF, "*"))
 myfiles <- myfiles[13:length(myfiles)]
 calendario <- fread(paste0(dir, "sinan_calendario.txt"))
-confirmados <- FALSE
+confirmados <- TRUE #agora vou gerar o confirmados
 for(i in startFile:length(myfiles)){
   tempFile <- fread(paste0(dir, "tsv/", myfiles[i]), stringsAsFactors = FALSE, showProgress = FALSE)
   myYearCalen <- paste0(20,str_replace_all(myfiles[i], "[^0-9]", ""))
@@ -152,9 +166,9 @@ for(i in startFile:length(myfiles)){
   temp_agre$Noti_Date <- as.Date(temp_agre$Noti_Date)
   temp_agre$Race_Colour <- factor(temp_agre$Race_Colour, levels = c(1, 2, 3, 4, 5, 9), labels = c("Branca", "Preta", "Amarela", "Parda", "Indigena", "Ignorado"))
   temp_agre$Age <- ifelse(nchar(temp_agre$Age_temp) == 2, 
-                                  as.numeric(temp_agre$Age_temp), 
-                                  ifelse(substr(temp_agre$Age_temp, 1, 2) == "40", 
-                                         as.numeric(substr(temp_agre$Age_temp, 3, 4)), 0))
+                          as.numeric(temp_agre$Age_temp), 
+                          ifelse(substr(temp_agre$Age_temp, 1, 2) == "40", 
+                                 as.numeric(substr(temp_agre$Age_temp, 3, 4)), 0))
   temp_agre_final <- temp_agre %>%
     ungroup() %>%
     dplyr::select(Noti_Date, Noti_Week, weekStart, State, City, New_Cases, Age, Sex, Race_Colour)
@@ -167,8 +181,8 @@ for(i in startFile:length(myfiles)){
     newBahia <- rbind(newBahia, temp_agre_final)
   }
 }
-
-
+#depois de baixado, coverte e consolida os arquivos
+newBahia$State=as.numeric(newBahia$State)
 
 pop2024 <- populacao_municipios(2024)
 meso_regiao <- read_xls(paste0(dir, "regioes_geograficas_composicao_por_municipios_2017_20180911.xls"))
@@ -183,9 +197,10 @@ if (confirmados == TRUE){
 }else{
   write.table(baseFinal, paste0(dir, "/2014-2025_DENGUE_NOTIFICADOS_dash_new.tsv"), sep = "\t", row.names = FALSE)
 }
+#############################################################
+#consolidando arquvivo final q eu preciso
 
 
-  
 temp_1 <- temp %>%
   group_by(CLASSI_FIN, CRITERIO, EVOLUCAO) %>%
   dplyr::summarise(count = n()) %>%
@@ -199,7 +214,7 @@ t <- c("DENGBR00", "DENGBR01", "DENGBR02", "DENGBR03", "DENGBR04", "DENGBR05", "
        "DENGBR07", "DENGBR08", "DENGBR09", "DENGBR10", "DENGBR11", "DENGBR12", "DENGBR13",
        "DENGBR14", "DENGBR15", "DENGBR16", "DENGBR17", "DENGBR18", "DENGBR19", "DENGBR20",
        "DENGBR21", "DENGBR22", "DENGBR23", "DENGBR24", "DENGBR25"
-       )
+)
 lists <- list()
 i <- 1
 confirmados <- FALSE
@@ -252,7 +267,7 @@ for (file in t){
   temp_agre$Noti_Date <- as.Date(temp_agre$Noti_Date)
   temp_agre$Race_Colour <- factor(temp_agre$Race_Colour, levels = c(1, 2, 3, 4, 5, 9), labels = c("Branca", "Preta", "Amarela", "Parda", "Indigena", "Ignorado"))
   if (idade == FALSE){
-   temp_agre$Age <- ifelse(nchar(temp_agre$Age_temp) == 2, 
+    temp_agre$Age <- ifelse(nchar(temp_agre$Age_temp) == 2, 
                             as.numeric(temp_agre$Age_temp), 
                             ifelse(substr(temp_agre$Age_temp, 1, 2) == "40", 
                                    as.numeric(substr(temp_agre$Age_temp, 3, 4)), 0))
@@ -263,7 +278,7 @@ for (file in t){
                                   ifelse(nchar(temp_agre$Age_temp) == 2,
                                          as.numeric(temp_agre$Age_temp),
                                          as.numeric(substr(temp_agre$Age_temp, 3, 4)))))
-    }
+  }
   temp_agre_final <- temp_agre %>% ungroup() %>%  select(Noti_Date, Noti_Week, Noti_Year, State, City, New_Cases, Age, Sex, Race_Colour)
   temp_agre_final$City <- as.numeric(temp_agre_final$City)
   temp_agre_final$City <- as.numeric(temp_agre_final$City)

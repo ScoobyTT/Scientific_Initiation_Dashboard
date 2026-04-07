@@ -5,14 +5,13 @@ dados_filtrados <- reactive({
   if (input$uf_filter == "Todos") {
     dados <- plot1
   } else {
-   # dados <- plot1[UF == input$uf_filter]
-  # "fread" é uma boa pra caso de ler arquivos separados 
-     dados <- fread("input/plot_1_ultimoTeste.tsv") %>%
-       filter(abbrev_state == input$uf_filter)
+    # dados <- plot1[UF == input$uf_filter]
+    # "fread" é uma boa pra caso de ler arquivos separados 
+    dados <- plot1 %>%
+      filter(abbrev_state == input$uf_filter)
   }
   #nao precisa do *return* o R ja faz isso por padrao
 })
-
 
 # Output do PRIMEIRO GRAFICO
 output$scatterplot <- renderPlot({
@@ -24,8 +23,8 @@ output$scatterplot <- renderPlot({
   ))
   
   ggplot(dados) +
-    geom_col(aes(x = months, y = New_Cases_Noti, fill = "Notificados"), alpha = 0.7) +
-    geom_smooth(aes(x = months, y = New_Cases_Conf * 5, color = "Confirmados"), 
+    geom_col(aes(x = month, y = New_Cases_Noti, fill = "Notificados"), alpha = 0.7) +
+    geom_smooth(aes(x = month, y = New_Cases_Conf * 5, color = "Confirmados"), 
                 method = "loess", se = FALSE, size = 1) +
     scale_y_continuous(
       name = "Casos Notificados", 
@@ -68,17 +67,17 @@ output$scatterplotPrev <- renderPlot({
     theme(axis.text.x = element_text(angle = 45, hjust = 1),
           legend.position = "bottom")
 })
-' 
-extra_colunas <- dengue_data %>%
-  mutate(months = as.Date(floor_date(Noti_Date, "month"))) %>%
-  group_by(months, State, nome_munic, cod_municipio) %>%
-  summarise(populacao = sum(populacao, na.rm = TRUE)) %>%
-  drop_na()
+ 
+#extra_colunas <- dengue_data %>%
+#  mutate(months = as.Date(floor_date(Noti_Date, "month"))) %>%
+#  group_by(months, State, nome_munic, cod_municipio) %>%
+#  summarise(populacao = sum(populacao, na.rm = TRUE)) %>%
+#  drop_na()
 
-plot1 <- plot1 %>%
-  mutate(months = as.Date(months)) %>%
-  left_join(extra_colunas, by = "months")
+#plot1 <- plot1 %>%
+#  mutate(months = as.Date(months)) %>%
+#  left_join(extra_colunas, by = "months")
 
-plot1 <- plot1 %>%
-  left_join(dengue.final, by = months)
-  '
+#plot1 <- plot1 %>%
+#  left_join(dengue.final, by = months)
+  

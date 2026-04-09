@@ -267,3 +267,20 @@ plot1 <- left_join(dengue_data_agre_n, dengue_data_agre_c,
                    by = c("month", "abbrev_state", "name_state"))
 
 write_tsv(plot1, file = "input/plot_1.tsv")
+
+
+
+
+#########################################################################
+library(microdatasus)
+
+# Baixa os dados
+dengue_raw <- fetch_datasus(
+  year_start = 2014,
+  year_end = 2025,
+  information_system = "SINAN-DENGUE"
+)
+
+# Processa
+dengue_raw <- process_sinan_dengue(dengue_raw)
+

@@ -1,11 +1,12 @@
 # Reactive com filtro de estado
+teste <- fread("input/cards.csv")
 dados_filtradosC <- reactive({
   req(input$uf_filter)  
   if (input$uf_filter == "Todos") {
-    dados <- cards
+    dados <- teste
   } else {
-    dados <- cards %>%
-      filter(State == input$uf_filter)
+    dados <- teste %>%
+      filter(abbrev_state == input$uf_filter)
   }
   dados <- tidyr::replace_na(dados, list(incidence = 0))
   return(dados)

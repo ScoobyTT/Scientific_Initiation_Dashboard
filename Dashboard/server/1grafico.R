@@ -24,7 +24,7 @@ output$scatterplot <- renderPlot({
   
   ggplot(dados) +
     geom_col(aes(x = month, y = New_Cases_Noti, fill = "Notificados"), alpha = 0.7) +
-    geom_smooth(aes(x = month, y = New_Cases_Conf * 5, color = "Confirmados"), 
+    geom_smooth(aes(x = month, y = New_Cases_Conf , color = "Confirmados"), 
                 method = "loess", se = FALSE, size = 1) +
     scale_y_continuous(
       name = "Casos Notificados", 

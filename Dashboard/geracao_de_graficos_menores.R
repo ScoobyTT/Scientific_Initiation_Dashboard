@@ -8,6 +8,54 @@ setwd("/home/christian/Scientific_Initiation_Dashboard/Dashboard/")
 # Grafico 1
 dengue_data <- fread("input/2014-2025_DENGUE_CONFIRMADOS_dash_new.tsv")
 dengue_conf <- fread("input/2014-2025_DENGUE_CONFIRMADOS_dash_new.tsv")
+pop <- ribge::populacao_municipios(2024)
+estado <- read_state(year = 2020)
+
+
+dengue_data <- dengue_data %>%
+  left_join(
+    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
+    by = c("State" = "code_state")
+  )
+
+dengue_conf <- dengue_conf %>%
+  left_join(
+    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
+    by = c("State" = "code_state")
+  )
+#pro caso de ser nessario o uso das colunas de 'meses(month), codigo do estado(code_state) e estado(name_state)'
+'
+dengue_data <- dengue_data %>%
+  left_join(
+    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
+    by = c("State" = "code_state")
+  )
+dengue_conf <- dengue_conf %>%
+  left_join(
+    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
+    by = c("State" = "code_state")
+    
+  )
+
+dengue_data_agre_n <- dengue_data %>%
+  group_by(Noti_Date, abbrev_state, name_state) %>%
+  summarise(New_Cases = sum(New_Cases)) %>%
+  drop_na()
+
+dengue_data_agre_c <- dengue_conf %>%
+  group_by(Noti_Date, abbrev_state, name_state) %>%
+  summarise(New_Cases = sum(New_Cases)) %>%
+  drop_na()
+
+names(dengue_data_agre_n) <- c("months", "abbrev_state", "New_Cases_Noti")
+names(dengue_data_agre_c) <- c("months", "abbrev_state", "New_Cases_Conf")
+
+dengue_data_agre_p1 <- left_join(dengue_data_agre_n, dengue_data_agre_c, 
+                                 by = c("months", "abbrev_state"))
+
+write_tsv(dengue_data_agre_p1, file = "input/plot_1_ultimoTeste.tsv")
+'
+
 
 dengue_data_agre_n <- dengue_data %>%
   group_by(weekStart) %>%
@@ -60,23 +108,23 @@ dengue_data_pyramid_conf <- dengue_conf %>%
   )
 
 dengue_data_pyramid_conf_agre <- dengue_data_pyramid_conf %>%
-  group_by(Sex, Age, Age_Group) %>%
+  group_by(Sex, Age, Age_Group, abbrev_state) %>%
   summarise(New_Cases_Conf = sum(New_Cases)) %>%
   drop_na()
 
 
 dengue_data_pyramid_noti_agre <- dengue_data_pyramid_noti %>%
-  group_by(Sex, Age, Age_Group) %>%
+  group_by(Sex, Age, Age_Group, abbrev_state) %>%
   summarise(New_Cases_Noti = sum(New_Cases)) %>%
   drop_na()
 
 
 dengue_data_pyramid <- left_join(dengue_data_pyramid_noti_agre, dengue_data_pyramid_conf_agre,
-                                 by=c("Sex", "Age", "Age_Group"))
+                                 by=c("Sex", "Age", "Age_Group", "abbrev_state"))
 
 
 
-write_tsv(subset(dengue_data_pyramid, Sex != "I"), file = "input/plot_3_pyramid.tsv")
+write_tsv(subset(dengue_data_pyramid, Sex != "I"), file = "input/plot_3_teste_pyramid.tsv")
 
 
 # Grafico MAPA
@@ -123,10 +171,6 @@ write_tsv(dados_plot, file = "input/plot4.tsv")
 
 # grafico Tabela
 
-pop <- ribge::populacao_municipios(2024)
-estado <- read_state(year = 2020)
-
-
 pop_estado <- pop %>%
   group_by(uf, codigo_uf) %>%
   summarise(populacao = sum(populacao)) %>%
@@ -161,7 +205,7 @@ write_tsv(dados_sem_geom, file = "input/plot_tabela.tsv")
 
 
 
-
+#arquivo do mapa especifico de brasilia
 ##################################
 setwd("/home/christian/Scientific_Initiation_Dashboard/Dashboard/")
 
@@ -175,12 +219,6 @@ regioes <- unique(tools::file_path_sans_ext(base))
 regioes
 # [1] "brasil_municipios"  "estados_2022"  "rodovias"
 
-
-
-
-
-setwd("/home/christian/Scientific_Initiation_Dashboard/Dashboard/")
-
 # Lista todos os arquivos relevantes de uma pasta
 base_2 <- list.files("input/centros/", pattern = "\\.(cpg|dbf|prj|qix|shp|shx)$", 
                      full.names = FALSE)
@@ -191,38 +229,11 @@ centros <- unique(tools::file_path_sans_ext(base))
 centros
 # [1] "brasil_municipios"  "estados_2022"  "rodovias"
 
-
-dengue_data <- dengue_data %>%
-  left_join(
-    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
-    by = c("State" = "code_state")
-  )
-dengue_conf <- dengue_conf %>%
-  left_join(
-    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
-    by = c("State" = "code_state")
-    
-  )
-
-dengue_data_agre_n <- dengue_data %>%
-  group_by(Noti_Date, abbrev_state, name_state) %>%
-  summarise(New_Cases = sum(New_Cases)) %>%
-  drop_na()
-
-dengue_data_agre_c <- dengue_conf %>%
-  group_by(Noti_Date, abbrev_state, name_state) %>%
-  summarise(New_Cases = sum(New_Cases)) %>%
-  drop_na()
-
-names(dengue_data_agre_n) <- c("months", "abbrev_state", "New_Cases_Noti")
-names(dengue_data_agre_c) <- c("months", "abbrev_state", "New_Cases_Conf")
-
-dengue_data_agre_p1 <- left_join(dengue_data_agre_n, dengue_data_agre_c, 
-                                 by = c("months", "abbrev_state"))
-
-write_tsv(dengue_data_agre_p1, file = "input/plot_1_ultimoTeste.tsv")
+######################################################################################################
 
 
+#arquivo bruto pra gerar os cards de brasilia
+'  
 library(microdatasus)
 library(dplyr)
 
@@ -237,41 +248,13 @@ dados_dengue <- fetch_datasus(
 por_regiao <- dados_dengue |>
   group_by(regiao_administrativa) |>  # nome da coluna pode variar
   summarise(total_casos = n())
-
+'
 ########################################################################
-dengue_data <- dengue_data %>%
-  left_join(
-    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
-    by = c("State" = "code_state")
-  )
-
-dengue_conf <- dengue_conf %>%
-  left_join(
-    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
-    by = c("State" = "code_state")
-  )
-
-dengue_data_agre_n <- dengue_data %>%
-  mutate(month = floor_date(weekStart, "month")) %>%
-  group_by(month, abbrev_state, name_state) %>%
-  summarise(New_Cases_Noti = sum(New_Cases, na.rm = TRUE)) %>%
-  drop_na()
-
-dengue_data_agre_c <- dengue_conf %>%
-  mutate(month = floor_date(weekStart, "month")) %>%
-  group_by(month, abbrev_state, name_state) %>%
-  summarise(New_Cases_Conf = sum(New_Cases, na.rm = TRUE)) %>%
-  drop_na()
-
-plot1 <- left_join(dengue_data_agre_n, dengue_data_agre_c,
-                   by = c("month", "abbrev_state", "name_state"))
-
-write_tsv(plot1, file = "input/plot_1.tsv")
 
 
-
-
-#########################################################################
+######################################################################
+#downkload do arquivo bruto pra gerar o plot 'cards' 
+remotes::install_github("rfsaldanha/microdatasus")
 library(microdatasus)
 
 # Baixa os dados
@@ -280,7 +263,35 @@ dengue_raw <- fetch_datasus(
   year_end = 2025,
   information_system = "SINAN-DENGUE"
 )
-
 # Processa
 dengue_raw <- process_sinan_dengue(dengue_raw)
+library(data.table)
+library(tidyverse)
+library(ribge)
+library(geobr)
 
+setwd("/home/christian/Scientific_Initiation_Dashboard/Dashboard/")
+
+# Grafico 1
+dengue_data <- fread("input/2014-2025_DENGUE_CONFIRMADOS_dash_new.tsv")
+dengue_conf <- fread("input/2014-2025_DENGUE_CONFIRMADOS_dash_new.tsv")
+pop <- ribge::populacao_municipios(2024)
+estado <- read_state(year = 2020)
+
+cards1 <- fread("input/dengue_raw.csv")
+names(cards1)
+
+cards <- cards1 %>%
+  mutate(year = NU_ANO) %>%
+  group_by(year) %>%
+  summarise(
+    noti_deaths = sum(EVOLUCAO == 2, na.rm = TRUE),           # todos os óbitos notificados
+    confi_deaths = sum(EVOLUCAO == 2 & CLASSI_FIN %in% c(10, 11, 12), na.rm = TRUE)  # óbitos confirmados
+  )
+
+obitos <- dengue_data %>%
+  left_join(
+    estado %>% st_drop_geometry() %>% select(code_state, abbrev_state, name_state),
+    by = c("State" = "code_state")
+  )
+  

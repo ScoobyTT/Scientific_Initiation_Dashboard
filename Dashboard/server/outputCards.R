@@ -3,13 +3,13 @@ teste <- fread("input/cards.csv")
 dados_filtradosC <- reactive({
   req(input$uf_filter)  
   if (input$uf_filter == "Todos") {
-    dados <- teste
+    dados <- cards
   } else {
-    dados <- teste %>%
+    dados <- cards %>%
       filter(abbrev_state == input$uf_filter)
   }
   dados <- tidyr::replace_na(dados, list(incidence = 0))
-  return(dados)
+    #nao precisa de return, o R ja faz isso por padrao.
 })
 
 # ---- VALUE BOXES / CARDS ----

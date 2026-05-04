@@ -21,14 +21,17 @@ output$scatterplot <- renderPlot({
     nrow(dados) > 0,
     "Nenhum dado disponível. Verifique se o arquivo foi carregado corretamente."
   ))
-  
+  dados$months <- as.Date(dados$months) 
+  dados$New_Cases_Conf <- as.numeric(dados$New_Cases_Conf)  
+  dados$New_Cases_Noti <- as.numeric(dados$New_Cases_Noti)  
+  valor <- max(dados$New_Cases_Noti, na.rm = TRUE) / max(dados$New_Cases_Conf, na.rm = TRUE)
   ggplot(dados) +
-    geom_col(aes(x = month, y = New_Cases_Noti, fill = "Notificados"), alpha = 0.7) +
-    geom_smooth(aes(x = month, y = New_Cases_Conf , color = "Confirmados"), 
+    geom_col(aes(x = months, y = New_Cases_Noti, fill = "Notificados"), alpha = 0.7) +
+    geom_line(aes(x = months, y = New_Cases_Conf * valor, color = "Confirmados"), 
                 method = "loess", se = FALSE, size = 1) +
     scale_y_continuous(
       name = "Casos Notificados", 
-      sec.axis = sec_axis(~./5, name = 'Casos Confirmados')
+      sec.axis = sec_axis(~./valor, name = 'Casos Confirmados')
     ) +
     scale_fill_manual(name = "Tipo de Caso", values = c("Notificados" = "blue")) +
     scale_color_manual(name = "Tipo de Caso", values = c("Confirmados" = "firebrick")) +

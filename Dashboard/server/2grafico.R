@@ -7,7 +7,7 @@ dados_filtradosPL3 <- reactive({
     dados <- plot3
   } else { 
     #escolha = input$uf_filter        else if(escolha != todos)  selecao == escolha
-    dados <- fread("input/plot_3_teste_pyramid.tsv") %>%
+    dados <- plot3 %>%
       filter(abbrev_state == input$uf_filter)
     #dados <- left_join(
      # dados,

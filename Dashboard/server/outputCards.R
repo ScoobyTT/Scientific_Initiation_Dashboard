@@ -1,5 +1,4 @@
 # Reactive com filtro de estado
-teste <- fread("input/cards.csv")
 dados_filtradosC <- reactive({
   req(input$uf_filter)  
   if (input$uf_filter == "Todos") {

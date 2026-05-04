@@ -366,7 +366,7 @@ for (file in t){
       # mutate(cum_cases = cumsum(new_cases)) %>%
       drop_na()
   }
-  names(temp_agre) <- c("Noti_Date", "Noti_Week", "Noti_Year", "State", "City", "Age_temp", "Sex", "Race_Colour", "Deaths", "New_Cases")
+  names(temp_agre) <- c("Noti_Date", "Noti_Week", "Noti_Year", "State", "City", "Age_temp", "Sex", "Race_Colour", "Deaths", "New_Cases") #mortes
   temp_agre$Noti_Date <- as.Date(temp_agre$Noti_Date)
   temp_agre$Race_Colour <- factor(temp_agre$Race_Colour, levels = c(1, 2, 3, 4, 5, 9), labels = c("Branca", "Preta", "Amarela", "Parda", "Indigena", "Ignorado"))
   if (idade == FALSE){

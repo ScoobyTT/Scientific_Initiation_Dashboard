@@ -12,7 +12,7 @@ server <- function(input, output, session) {
   source("server/mapa.R", local =  TRUE)
   source("server/tabelaDados.R", local = TRUE)
   source("server/1grafico.R", local = TRUE)
-  source("server/tabelaRaca.R", local = TRUE)
+  source("server/diagramaControle.R", local = TRUE)
   source("server/2grafico.R", local = TRUE)
   source("server/outputCards.R", local = TRUE)
 }

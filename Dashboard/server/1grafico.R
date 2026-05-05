@@ -70,6 +70,7 @@ output$scatterplotPrev <- renderPlot({
     theme(axis.text.x = element_text(angle = 45, hjust = 1),
           legend.position = "bottom")
 })
+
  
 #extra_colunas <- dengue_data %>%
 #  mutate(months = as.Date(floor_date(Noti_Date, "month"))) %>%

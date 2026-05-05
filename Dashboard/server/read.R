@@ -5,6 +5,7 @@ dados_upload <- reactive({
   read.csv(input$upload_arquivo$datapath, sep = ";")  # ou sep = "," se for vírgula
 })
 
+
 # 2. Exibe os dados
 output$tabela_upload <- renderTable({
   head(dados_upload(), 10)

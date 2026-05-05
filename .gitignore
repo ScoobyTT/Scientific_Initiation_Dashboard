@@ -5,15 +5,21 @@
 Dashboard/input/*.tsv
 *.csv
 *.tsv
+*.dbf
+
 data/
 *.tsv
 *.csv
 *.dbf
-Dashboard/input/
-*.tsv
-*.csv
-*.dbf
-Dashboard/input/
-*.tsv
-*.csv
-*.dbf
+# Docker
+*.tar
+
+# Dados brutos
+Dashboard/input/finais/
+Dashboard/input/parciais/
+Dashboard/input/tsv/
+
+# Logs
+logs/
+Dashboard/input/municipios_2020.rds
+Dashboard/input/dengue_raw.zip

@@ -17,7 +17,7 @@ plot3 <- fread("input/plot_3_pyramid.tsv")
 plot4 <- fread("input/plot4.tsv")
 plot2 <- fread("input/plot_tabela.tsv")
 plot5 <- fread("input/plot_mapa.tsv")
-cards <- fread("input/plot_cards.tsv")
+cards <- fread("input/cardss.tsv")
 plot4_new <- fread("input/plot4_new.tsv")
 plot1_pred$week <- factor(plot1_pred$week)
 

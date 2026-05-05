@@ -24,10 +24,10 @@ output$new_cases <- renderUI({
 
 output$total_deaths <- renderUI({
   df <- dados_filtradosC()
-  format(sum(df$noti_deaths, na.rm = TRUE), big.mark = ".", decimal.mark = ",", nsmall = 0)
+  format(sum(df$mortes_noti, na.rm = TRUE), big.mark = ".", decimal.mark = ",", nsmall = 0)
 })
 
 output$new_deaths <- renderUI({
   df <- dados_filtradosC()
-  format(sum(df$confi_deaths, na.rm = TRUE), big.mark = ".", decimal.mark = ",", nsmall = 0)
+  format(sum(df$mortes_conf, na.rm = TRUE), big.mark = ".", decimal.mark = ",", nsmall = 0)
 })

@@ -56,16 +56,16 @@ output$scatterplotPrev <- renderPlot({
                 aes(x = week, ymin = lower_bound, ymax = upper_bound, fill = "prediction"),
                 alpha = 0.3) +
     scale_color_manual(values = c(
-      "previous_not_used_data" = "red",
-      "used_input_data" = "blue",
-      "prediction" = "black"
+      "dados_anteriores_não_utilizados" = "red",
+      "dados_de_entrada_usados" = "blue",
+      "previsão" = "black"
     )) +
     scale_fill_manual(values = c("prediction" = "gray")) +
-    labs(x = "Epidemiological Week",
-         y = "Weekly Dengue Cases",
-         color = "Source",
-         fill = "Prediction Interval",
-         title = "Dengue Weekly Cases Forecast for Brazil") +
+    labs(x = "Semana Epidemiológica",
+         y = "Casos semanais de dengue",
+         color = "Intervalor (source)",
+         fill = "Intervalo de previsão",
+         title = "Previsão semanal de casos de dengue no Brasil") +
     theme_minimal() +
     theme(axis.text.x = element_text(angle = 45, hjust = 1),
           legend.position = "bottom")

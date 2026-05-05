@@ -201,7 +201,37 @@ dados_sem_geom <- select(dengue_data_agre_table_final_f, -geom)
 
 write_tsv(dados_sem_geom, file = "input/plot_tabela.tsv")
 
+#####################################################################################################################################
+library(geobr)
+library(sf)
+estado <- read_state(year = 2020)
+estado <- read_state(year = 2020)
+print(estado)
+cards_noti <- dengue_data %>%
+  group_by(abbrev_state) %>%
+  summarise(notificados = sum(New_Cases, na.rm = TRUE), .groups = "drop")
 
+cards_mortes_not <- dengue_data %>%
+  filter(EVOLUCAO == 2) %>%
+  group_by(abbrev_state) %>%
+  summarise(mortes_noti = sum(New_Cases, na.rm = TRUE), .groups = "drop")
+
+cards_mortes_conf <- dengue_conf %>%
+  filter(EVOLUCAO == 2)%>%
+  group_by(abbrev_state)%>%
+  summarise(mortes_conf = sum(New_Cases, na.rm = TRUE), .groups = "drop")
+
+cards_conf <- dengue_conf %>%
+  group_by(abbrev_state) %>%
+  summarise(confirmados = sum(New_Cases, na.rm = TRUE), .groups = "drop")
+
+cards <- cards_noti %>%
+  left_join(cards_mortes_not, by = "abbrev_state") %>%
+  left_join(cards_conf, by = "abbrev_state")%>%
+  left_join(cards_mortes_conf, by = "abbrev_state")
+write_tsv(cards, file = "input/cardss.tsv")
+
+write_tsv(dengue_data_agre_p1, file = "input/plot_1_ultimoTeste.tsv")
 
 ' 
 

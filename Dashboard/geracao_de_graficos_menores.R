@@ -6,7 +6,7 @@ library(geobr)
 setwd("/home/christian/Scientific_Initiation_Dashboard/Dashboard/")
 
 # Grafico 1
-dengue_data <- fread("input/2014-2025_DENGUE_CONFIRMADOS_dash_new.tsv")
+dengue_data <- fread("input/2014-2025_DENGUE_NOTIFICADOS_dash_new.tsv")
 dengue_conf <- fread("input/2014-2025_DENGUE_CONFIRMADOS_dash_new.tsv")
 pop <- ribge::populacao_municipios(2024)
 estado <- read_state(year = 2020)

@@ -10,6 +10,8 @@ ui <- page_navbar(
   header = tagList(
     tags$style(HTML("
       .selectize-dropdown { z-index: 9999 !important; }
+      .card { overflow: visible !important; }
+      .card-body { overflow: visible !important; }
     ")),
     
     # Filtros

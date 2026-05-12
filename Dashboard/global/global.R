@@ -19,3 +19,11 @@ library(gridExtra)
 library(DT)
 library(readxl)
 
+estado_path <- "input/estado_2020.rds"
+
+if (!file.exists(estado_path)) {
+  estados <- geobr::read_state(year = 2020)
+  saveRDS(estados, estado_path)
+} else {
+  estados <- readRDS(estado_path)
+}

@@ -2,8 +2,8 @@ library(geobr)
 library(leaflet)
 library(sf)
 
-estados <- read_state(code_state = "all", year = 2020, showProgress = FALSE)
-  
+
+
   # Dados filtrados para estados 
   dados_filtradosMP <- reactive({
     if (input$uf_filter == "Todos") {

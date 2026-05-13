@@ -27,3 +27,5 @@ if (!file.exists(estado_path)) {
 } else {
   estados <- readRDS(estado_path)
 }
+
+

@@ -1,15 +1,14 @@
 source("global/global.R")
 source("theme/theme.R")
 options(scipen = 999)
-ui <- fluidPage(
-  source("ui/ui.R")$value
 
-  
-)
+ui <- source("ui/ui.R")$value
+
+
 server <- function(input, output, session) {
-  #carrega os arquivos
+  thematic::thematic_shiny()
   source("server/read.R", local = TRUE)
-  source("server/mapa.R", local =  TRUE)
+  source("server/mapa.R", local = TRUE)
   source("server/tabelaDados.R", local = TRUE)
   source("server/1grafico.R", local = TRUE)
   source("server/diagramaControle.R", local = TRUE)

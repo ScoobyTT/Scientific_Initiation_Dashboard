@@ -84,4 +84,44 @@ output$scatterplotPrev <- renderPlot({
 
 #plot1 <- plot1 %>%
 #  left_join(dengue.final, by = months)
+
+
+observe({
+  session$setCurrentTheme(
+    if (isTRUE(input$dark_mode)) {
+      bs_theme(version = 5, bootswatch = "cyborg",
+               base_font = font_google("DM Sans"),
+               heading_font = font_google("DM Sans"))
+    } else {
+      bs_theme(version = 5, bootswatch = "minty",
+               base_font = font_google("DM Sans"),
+               heading_font = font_google("DM Sans"))
+    }
+  )
+})
+
+observe({
+  if (isTRUE(input$dark_mode)) {
+    session$setCurrentTheme(
+      bs_theme(version = 5, bootswatch = "cyborg",
+               base_font = font_google("DM Sans"),
+               heading_font = font_google("DM Sans"))
+    )
+    theme_set(theme_minimal(base_family = "DM Sans") +
+                theme(
+                  plot.background = element_rect(fill = "#161616", color = NA),
+                  panel.background = element_rect(fill = "#161616", color = NA),
+                  text = element_text(color = "#e8e8e8"),
+                  axis.text = element_text(color = "#aaa"),
+                  panel.grid = element_line(color = "rgba(255,255,255,0.06)")
+                ))
+  } else {
+    session$setCurrentTheme(
+      bs_theme(version = 5, bootswatch = "minty",
+               base_font = font_google("DM Sans"),
+               heading_font = font_google("DM Sans"))
+    )
+    theme_set(theme_minimal(base_family = "DM Sans"))
+  }
+})
   

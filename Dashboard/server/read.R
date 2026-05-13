@@ -29,8 +29,13 @@ names(tabela_final) <- c("Região", "Estado", "Casos Notificados por 100 mil", "
 
 plot3$Age_Group <- factor(plot3$Age_Group, levels = c("0-4", "5-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80+"))
 
-municipios <- read_municipality(code_muni = "all", year = 2020, showProgress = FALSE, cache = TRUE)
-
+municipios_path <- "input/municipios_2020.rds"
+if (!file.exists(municipios_path)) {
+  municipios <- geobr::read_municipality(code_muni = "all", year = 2020, showProgress = FALSE)
+  saveRDS(municipios, municipios_path)
+} else {
+  municipios <- readRDS(municipios_path)
+}
 
 
 

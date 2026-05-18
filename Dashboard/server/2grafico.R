@@ -3,19 +3,24 @@ dados_filtradosPL3 <- reactive({
   req(input$uf_filter)  
   req(plot3) 
   
-  if (input$uf_filter == "Todos") {
-    dados <- plot3
-  } else { 
+  dados <- plot3
+  
+  if (input$uf_filter != "Todos") {
+    dados <- dados %>% filter(abbrev_state == input$uf_filter)
+  }
+  if (!is.null(input$ano_filter)) {
+    dados <- dados %>%
+      filter(year(months) >= input$ano_filter[1],
+             year(months) <= input$ano_filter[2])
     #escolha = input$uf_filter        else if(escolha != todos)  selecao == escolha
-    dados <- plot3 %>%
-      filter(abbrev_state == input$uf_filter)
+    
     #dados <- left_join(
      # dados,
     #  plot3 %>% select(New_Cases_Conf, New_Cases_Noti, Age_Group, Sex),
     #  by = c("New_Cases_Noti" = "New_Cases_Noti")
     #)
   }
-  return(dados)
+  
 })
  
   

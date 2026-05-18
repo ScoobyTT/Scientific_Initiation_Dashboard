@@ -1,18 +1,21 @@
-# Dados filtrados reativos
 dados_filtrados <- reactive({
-  req(input$uf_filter)  
+  req(input$uf_filter)
+  req(input$ano_filter)
   
-  if (input$uf_filter == "Todos") {
-    dados <- plot1
-  } else {
-    # dados <- plot1[UF == input$uf_filter]
-    # "fread" é uma boa pra caso de ler arquivos separados 
-    dados <- plot1 %>%
-      filter(abbrev_state == input$uf_filter)
+  dados <- plot1
+  
+  if (input$uf_filter != "Todos") {
+    dados <- dados %>% filter(abbrev_state == input$uf_filter)
   }
-  #nao precisa do *return* o R ja faz isso por padrao
+  
+  if (!is.null(input$ano_filter)) {
+  dados <- dados %>%
+    filter(year(months) >= input$ano_filter[1],
+           year(months) <= input$ano_filter[2])
+}
+  
+  dados
 })
-
 # Output do PRIMEIRO GRAFICO
 output$scatterplot <- renderPlot({
   dados <- dados_filtrados()

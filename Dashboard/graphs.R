@@ -33,7 +33,7 @@ dengue_data_agre_c <- dengue_conf %>%
   group_by(Noti_Date, abbrev_state, name_state) %>%
   summarise(New_Cases = sum(New_Cases), .groups = "drop") %>%
   drop_na()
-
+ 
 names(dengue_data_agre_n) <- c("months", "abbrev_state", "name_state", "New_Cases_Noti")
 names(dengue_data_agre_c) <- c("months", "abbrev_state", "name_state", "New_Cases_Conf")
 
@@ -62,17 +62,18 @@ dengue_data_pyramid_conf <- dengue_conf %>%
   )
 
 dengue_data_pyramid_conf_agre <- dengue_data_pyramid_conf %>%
-  group_by(Sex, Age, Age_Group, abbrev_state) %>%
+  group_by(Sex, Age, Age_Group, abbrev_state, Noti_Date) %>%
   summarise(New_Cases_Conf = sum(New_Cases), .groups = "drop") %>%
   drop_na()
 
 dengue_data_pyramid_noti_agre <- dengue_data_pyramid_noti %>%
-  group_by(Sex, Age, Age_Group, abbrev_state) %>%
+  group_by(Sex, Age, Age_Group, abbrev_state, Noti_Date) %>%
   summarise(New_Cases_Noti = sum(New_Cases), .groups = "drop") %>%
   drop_na()
 
 dengue_data_pyramid <- left_join(dengue_data_pyramid_noti_agre, dengue_data_pyramid_conf_agre,
-                                 by = c("Sex", "Age", "Age_Group", "abbrev_state"))
+                                 by = c("Sex", "Age", "Age_Group", "abbrev_state", "Noti_Date"))
+names(dengue_data_pyramid)[5] <- "months"
 
 write_tsv(subset(dengue_data_pyramid, Sex != "I"), file = "input/plot_3_pyramid.tsv")
 
@@ -95,7 +96,7 @@ dados_plot <- dengue_data %>%
     TRUE ~ NA_character_
   )) %>%
   filter(!is.na(Race_Colour)) %>%
-  group_by(years, Race_Colour) %>%
+  group_by(years, Race_Colour, Noti_Date) %>%
   summarise(New_Cases = sum(New_Cases), .groups = "drop") %>%
   group_by(years) %>%
   mutate(TotalAno = sum(New_Cases), Percentual = New_Cases / TotalAno * 100) %>%
@@ -104,12 +105,14 @@ dados_plot <- dengue_data %>%
     Race_Colour = factor(Race_Colour, levels = c("Branca","Preta","Parda","Amarela","Indígena")),
     years = as.factor(years)
   )
+names(dados_plot)[3] <- "months"
 
 write_tsv(dados_plot, file = "input/plot4.tsv")
 
 # Tabela
 pop_estado <- pop %>%
   group_by(uf, codigo_uf) %>%
+  left_join(dengue_data) %>% select(Noti_Date)
   summarise(populacao = sum(populacao), .groups = "drop") %>%
   drop_na()
 

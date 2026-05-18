@@ -233,11 +233,27 @@ html[data-bs-theme='dark'] .bslib-input-dark-mode svg {
             column(width = 3),
             column(width = 3),
             column(width = 3)
+          ),
+          fluidRow(
+            column(
+              width = 3,
+              sliderInput(
+                inputId = "ano_filter",
+                label = "Ano:",
+                min = 2014,
+                max = 2025,
+                value = c(2014, 2025),  # intervalo padrão (dois handles)
+                step = 1,
+                sep = ""  # remove o separador de milhar (evita "2.014")
+              )
+            ),
+            column(width = 3),
+            column(width = 3),
+            column(width = 3)
           )
         )
       )
     ),
-    
     # Cards de valores
     layout_column_wrap(
       width = 1/4,

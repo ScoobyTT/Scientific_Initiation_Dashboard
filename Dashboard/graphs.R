@@ -105,26 +105,32 @@ dados_plot <- dengue_data %>%
     Race_Colour = factor(Race_Colour, levels = c("Branca","Preta","Parda","Amarela","Indígena")),
     years = as.factor(years)
   )
-names(dados_plot)[3] <- "months"
+rename(months = Noti_Date)
 
 write_tsv(dados_plot, file = "input/plot4.tsv")
 
 # Tabela
 pop_estado <- pop %>%
-  group_by(uf, codigo_uf) %>%
-  left_join(dengue_data) %>% select(Noti_Date)
+  left_join(dengue_data %>% select(uf, Noti_Date), by = "uf") %>%
+  group_by(uf, codigo_uf, Noti_Date) %>%
   summarise(populacao = sum(populacao), .groups = "drop") %>%
-  drop_na()
+  drop_na() %>%
+  rename(months = Noti_Date)
 
 dengue_data_noti <- dengue_data %>%
-  group_by(State, uf) %>%
+  left_join(dengue_data %>% select(uf, Noti_Date), by = "uf") %>%
+  group_by(State, uf, Noti_Date) %>%
   summarise(cases_noti = sum(New_Cases), .groups = "drop") %>%
-  drop_na()
+  drop_na()%>%
+  rename(months = Noti_Date)
+
 
 dengue_data_conf <- dengue_conf %>%
-  group_by(State, uf) %>%
+  left_join(dengue_data %>% select(uf, Noti_Date), by = "uf")%>%
+  group_by(State, uf, Noti_Date) %>%
   summarise(cases_conf = sum(New_Cases), .groups = "drop") %>%
-  drop_na()
+  drop_na() %>%
+  rename(months = Noti_Date)
 
 dengue_data_agre_table <- left_join(dengue_data_noti, dengue_data_conf, by = c("State", "uf"))
 

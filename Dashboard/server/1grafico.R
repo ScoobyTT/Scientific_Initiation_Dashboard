@@ -6,15 +6,17 @@ dados_filtrados <- reactive({
   
   if (input$uf_filter != "Todos") {
     dados <- dados %>% filter(abbrev_state == input$uf_filter)
+  }else{
+    dados <- dados %>% filter(abbrev_state == "BR")
   }
   
-  if (!is.null(input$ano_filter)) {
-  dados <- dados %>%
-    filter(year(months) >= input$ano_filter[1],
-           year(months) <= input$ano_filter[2])
-}
+#   if (!is.null(input$ano_filter)) {
+#   dados <- dados %>%
+#     filter(year(months) >= input$ano_filter[1],
+#            year(months) <= input$ano_filter[2])
+# }
   
-  dados
+  dados 
 })
 # Output do PRIMEIRO GRAFICO
 output$scatterplot <- renderPlot({
@@ -31,7 +33,7 @@ output$scatterplot <- renderPlot({
   ggplot(dados) +
     geom_col(aes(x = months, y = New_Cases_Noti, fill = "Notificados"), alpha = 0.7) +
     geom_line(aes(x = months, y = New_Cases_Conf * valor, color = "Confirmados"), 
-                method = "loess", se = FALSE, size = 1) +
+              size = 1) +
     scale_y_continuous(
       name = "Casos Notificados", 
       sec.axis = sec_axis(~./valor, name = 'Casos Confirmados')
@@ -88,7 +90,7 @@ output$scatterplotPrev <- renderPlot({
 #plot1 <- plot1 %>%
 #  left_join(dengue.final, by = months)
 
-
+' 
 observe({
   session$setCurrentTheme(
     if (isTRUE(input$dark_mode)) {
@@ -126,5 +128,5 @@ observe({
     )
     theme_set(theme_minimal(base_family = "DM Sans"))
   }
-})
+})' 
   

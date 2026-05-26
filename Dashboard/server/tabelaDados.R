@@ -6,7 +6,7 @@
 
 
 dengue.finalREG <- dengue.final %>%
-  filter(code_muni == "5300108")
+  filter(cod_municipio == "5300108")
 dengue.finalREG <- replace_na(dengue.finalREG, list(incidence = 0))
 dengue.finalREG$inc_cat <- cut(
   dengue.finalREG$incidence,
@@ -16,21 +16,29 @@ dengue.finalREG$inc_cat <- cut(
 )
 
 
-# Dados filtrados reativos - CORREÇÃO COMPLETA
 dados_filtradosTAB <- reactive({
-  req(input$uf_filter)  
-  
+  req(input$uf_filter)
+  dadosTAB <- plot2 %>%
+  mutate(ano = as.integer(format(months, "%Y")))
   if (input$uf_filter == "Todos") {
     dadosTAB <- dengue.final
-  } else if(input$uf_filter == "DF"){
+  } else if (input$uf_filter == "DF") {
     dadosTAB <- dengue.finalREG
-  }else {
+  } else {
     dadosTAB <- dengue.final %>%
       filter(abbrev_state == input$uf_filter)
   }
-  #nao precisa do return, o R ja faz por padrao
+  
+  if (!is.null(input$ano_filter)) {
+    dadosTAB <- dadosTAB %>%
+    as.data.frame() %>%
+      filter(year(as.Date(months)) >= input$ano_filter[1],
+             year(as.Date(months)) <= input$ano_filter[2])
+        
+  }
+  
+  dadosTAB
 })
-
 
 # OUTPUT DA TABELA 
 output$table <- DT::renderDataTable({

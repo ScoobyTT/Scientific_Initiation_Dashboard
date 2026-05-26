@@ -151,16 +151,7 @@ if (!file.exists(municipios_path)) {
 #   summarise(total = sum(New_Cases)) %>%
 #   drop_na()
 
-dengue.final <- left_join(municipios, plot5, by = c("code_state" = "State", "code_muni" = "cod_municipio"))
-
-dengue.final <- replace_na(dengue.final, list(incidence = 0))
-
-dengue.final$inc_cat <- cut(
-  dengue.final$incidence,
-  breaks = c(0, 100, 500, 2500, 10000, Inf),
-  labels = c("0–100", "101–500", "501–2500", "2501–10k", ">10k"),
-  include.lowest = TRUE
-)
+dengue.final <- plot5
 
 # Criar paleta de cores
 pal <- colorNumeric(palette = "YlOrRd", domain = dengue.final$incidence, na.color = "gray")  

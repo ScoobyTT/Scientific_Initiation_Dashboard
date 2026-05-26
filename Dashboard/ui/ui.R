@@ -262,25 +262,25 @@ html[data-bs-theme='dark'] .bslib-input-dark-mode svg {
       style = "padding: 0 20px;",
       value_box(
         "Casos Notificados",
-        uiOutput("total_cases", container = h2),
+        uiOutput("total_cases"),
         showcase = bsicons::bs_icon("clipboard-check"),
         theme_color = "primary"
       ),
       value_box(
         "Casos Confirmados",
-        uiOutput("new_cases", container = h2),
+        uiOutput("new_cases"),
         showcase = bsicons::bs_icon("bookmark-plus"),
         theme = "secondary"
       ),
       value_box(
         "Óbitos Notificados",
-        uiOutput("total_deaths", container = h2),
+        uiOutput("total_deaths"),
         showcase = bsicons::bs_icon("person-fill-dash"),
         theme = "success"
       ),
       value_box(
         "Óbitos Confirmados",
-        uiOutput("new_deaths", container = h2),
+        uiOutput("new_deaths",),
         showcase = bsicons::bs_icon("person-fill-exclamation"),
         theme = "danger"
       )

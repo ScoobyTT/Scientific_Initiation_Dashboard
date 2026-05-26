@@ -23,3 +23,4 @@ Dashboard/input/tsv/
 logs/
 Dashboard/input/municipios_2020.rds
 Dashboard/input/dengue_raw.zip
+Dashboard/input_old/

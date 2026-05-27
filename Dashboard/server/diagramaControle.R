@@ -12,21 +12,88 @@ dados_filtradosRACA <- reactive({
   dados <- tidyr::replace_na(dados, list(incidence = 0))
   return(dados)
 })'
+
+dados_filtrados <- reactive({
+  req(input$uf_filter)
+  req(input$ano_filter)
+  
+  dados <- plot1
+  
+  if (input$uf_filter != "Todos") {
+    dados <- dados %>% filter(abbrev_state == input$uf_filter)
+  }else{
+    dados <- dados %>% filter(abbrev_state == "BR")
+  }
+  
+  if (!is.null(input$ano_filter)) {
+    dados <- dados %>%
+      filter(year(months) >= input$ano_filter[1],
+             year(months) <= input$ano_filter[2])
+  }
+  
+  dados
+  
+  if (!is.null(input$ano_filter)) {
+    anos <- input$ano_filter[1]:input$ano_filter[2]
+  }else{
+    anos <- 2014:2025
+  }
+  cols_casos <- paste0("casos_", anos)
+  cols_pop   <- paste0("pop_", anos)
+  
+  df_filtrado <- plot4_new |>
+    select(uf, week, all_of(cols_casos), all_of(cols_pop))
+  
+  df_resultado <- df_filtrado |>
+    rowwise() |>
+    mutate(
+      q1       = quantile(c_across(all_of(cols_casos)), 0.25, na.rm = TRUE),
+      median  = quantile(c_across(all_of(cols_casos)), 0.50, na.rm = TRUE),
+      q3       = quantile(c_across(all_of(cols_casos)), 0.75, na.rm = TRUE),
+      soma     = sum(c_across(all_of(cols_casos)), na.rm = TRUE),
+      pop_media = mean(c_across(all_of(cols_pop)), na.rm = TRUE)
+    ) |>
+    ungroup()
+  
+  df_resultado <- df_resultado |>
+    mutate(
+      ci_soma = (soma / pop_media) * 100000
+    )
+  
+  if (input$uf_filter != "Todos") {
+    df_resultado_final <- df_resultado %>% filter(uf == input$uf_filter)
+  }else{
+    df_resultado_final <- df_resultado %>% filter(uf == "BR")
+  }
+  
+  df_resultado_final
+  
+})
+
+
+
+# if (!is.null(input$ano_filter)) {
+#   plot4_new <- plot4_new %>%
+#     filter(year(months) >= input$ano_filter[1],
+#            year(months) <= input$ano_filter[2])
+# }
+
   #OUTPUT DA TABELA: RAÇA COR
   output$scatterplotTerceiro <- renderPlot({
-    
+    dados <- dados_filtrados()
     validate(need(
-      nrow(plot4) > 0,
+      nrow(dados) > 0,
       "Nenhum dado disponível. Verifique se o arquivo foi carregado corretamente."
     ))
+    fator_escala <- max(dados$q3, na.rm = TRUE) / max(dados$ci_soma, na.rm = TRUE)
     
-    ggplot(plot4_new, aes(x = week)) +
-      geom_ribbon(aes(ymin = Q1, ymax = Q3, fill = "Q1 a Q3"), alpha = 0.5) +
+    ggplot(dados, aes(x = week)) +
+      geom_ribbon(aes(ymin = q1, ymax = q3, fill = "Q1 a Q3"), alpha = 0.5) +
       geom_line(aes(y = median, color = "Mediana"), linetype = "dashed", size = 1) +
-      geom_line(aes(y = CI * 270, color = "Coeficiente de Incidência"), size = 1) +
+      geom_line(aes(y = ci_soma * fator_escala, color = "Coeficiente de Incidência"), size = 1) +
       scale_y_continuous(
         name = "Canal Endêmico", 
-        sec.axis = sec_axis(~./270, name = 'Coef. de Incidência (por 100 mil hab.)')
+        sec.axis = sec_axis(~./fator_escala, name = 'Coef. de Incidência (por 100 mil hab.)')
       ) +
       scale_color_manual(
         name = NULL,

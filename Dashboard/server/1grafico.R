@@ -10,11 +10,11 @@ dados_filtrados <- reactive({
     dados <- dados %>% filter(abbrev_state == "BR")
   }
   
-#   if (!is.null(input$ano_filter)) {
-#   dados <- dados %>%
-#     filter(year(months) >= input$ano_filter[1],
-#            year(months) <= input$ano_filter[2])
-# }
+  if (!is.null(input$ano_filter)) {
+  dados <- dados %>%
+    filter(year(months) >= input$ano_filter[1],
+           year(months) <= input$ano_filter[2])
+}
   
   dados 
 })

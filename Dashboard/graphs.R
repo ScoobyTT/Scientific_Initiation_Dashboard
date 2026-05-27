@@ -242,4 +242,87 @@ mutate(
 )
 
 write_tsv(cards, file = "input/cardss.tsv")
+
+
+
+# Diagrama de controle
+
+plot_diagrama <- dengue_conf %>%
+  group_by(State, Noti_Week, uf) %>%
+  summarise(New_Cases = sum(New_Cases), .groups = "drop") %>%
+  drop_na()
+
+plot_diagrama$year <- substr(plot_diagrama$Noti_Week, 1, 4)
+plot_diagrama$week <- substr(plot_diagrama$Noti_Week, 5, 6)
+
+weeks <- names(table(plot_diagrama$Noti_Week))
+
+plot_diagrama_br <- plot_diagrama[0, ]
+
+for (i in 1:length(weeks)){
+  plot_diagrama_br[i, ] <- NA
+  plot_diagrama_br$State[i] <- 71
+  plot_diagrama_br$uf[i] <- "BR"
+  plot_diagrama_br$Noti_Week[i] <- weeks[i]
+  plot_diagrama_br$year[i] <- substr(weeks[i], 1, 4)
+  plot_diagrama_br$week[i] <- substr(weeks[i], 5, 6)
+  plot_diagrama_br$New_Cases[i] <- sum(plot_diagrama$New_Cases[which(plot_diagrama$Noti_Week == weeks[i])])
+}
+
+plot_diagrama <- rbind(plot_diagrama, plot_diagrama_br)
+
+pop2014 <- ribge::populacao_municipios(2014)
+pop2015 <- ribge::populacao_municipios(2015)
+pop2016 <- ribge::populacao_municipios(2016)
+pop2017 <- ribge::populacao_municipios(2017)
+pop2018 <- ribge::populacao_municipios(2018)
+pop2019 <- ribge::populacao_municipios(2019)
+pop2020 <- ribge::populacao_municipios(2020)
+pop2021 <- ribge::populacao_municipios(2021)
+pop2022 <- ribge::populacao_municipios(2022)
+pop2023 <- ribge::populacao_municipios(2022)
+pop2024 <- ribge::populacao_municipios(2024)
+pop2025 <- ribge::populacao_municipios(2025)
+
+
+pop_list <- list(
+  pop2014, pop2015, pop2016, pop2017, pop2018, pop2019,
+  pop2020, pop2021, pop2022, pop2023, pop2024, pop2025
+)
+years <- 2014:2025
+
+pop_estados <- bind_rows(
+  mapply(function(df, yr) {
+    df |> group_by(uf) |> summarise(populacao = sum(populacao, na.rm = TRUE), .groups = "drop") |> mutate(ano = yr)
+  }, pop_list, years, SIMPLIFY = FALSE)
+)
+
+pop_brasil <- pop_estados |>
+  group_by(ano) |>
+  summarise(populacao = sum(populacao, na.rm = TRUE), .groups = "drop") |>
+  mutate(uf = "BR")
+
+
+plot_diagrama_pivot <- plot_diagrama |>
+  filter(week != 53) |>
+  select(uf, week, year, New_Cases) |>
+  pivot_wider(
+    names_from  = year,
+    values_from = New_Cases,
+    names_prefix = "casos_"
+  ) |>
+  arrange(uf, week)
+
+pop_estados_wide <- pop_estados |>
+  pivot_wider(names_from = ano, values_from = populacao, names_prefix = "pop_")
+
+pop_brasil_wide <- pop_brasil |>
+  pivot_wider(names_from = ano, values_from = populacao, names_prefix = "pop_")
+
+pop_pivot <- rbind(pop_estados_wide, pop_brasil_wide)
+
+plot_diagrama_pivot <- plot_diagrama_pivot |>
+  left_join(pop_pivot, by = "uf")
+
+write_tsv(plot_diagrama_pivot, file = "input/plot4_new.tsv")
 cat("Graficos gerados com sucesso.\n")

@@ -12,7 +12,7 @@ output$tabela_upload <- renderTable({
 })
 #carrega os dados dos municipios e aplica no primeiro grafico
 
-plot1 <- fread("input/plot_1.tsv")
+plot1_new <- fread("input/plot_1.tsv")
 plot1_pred <- fread("input/plot1_pred.csv", colClasses = c(week = "character"))
 plot3 <- fread("input/plot_3_pyramid.tsv")
 plot4 <- fread("input/plot4.tsv")

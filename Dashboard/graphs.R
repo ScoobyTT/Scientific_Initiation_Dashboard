@@ -41,7 +41,7 @@ for(i in 1:length(datas_n)){
   dengue_data_agre_n_br$months[i] <- datas_n[i]
   dengue_data_agre_n_br$abbrev_state[i] <- "BR"
   dengue_data_agre_n_br$name_state[i] <- "Todos"
-  dengue_data_agre_n_br$New_Cases[i] <- sum(dengue_data_agre_n$New_Cases[which(dengue_data_agre_n$months == datas[i])])
+  dengue_data_agre_n_br$New_Cases[i] <- sum(dengue_data_agre_n$New_Cases[which(dengue_data_agre_n$months == datas_n[i])])
 }
 
 dengue_data_agre_n <- rbind(dengue_data_agre_n, dengue_data_agre_n_br)
@@ -242,7 +242,7 @@ mutate(
 )
 
 write_tsv(cards, file = "input/cardss.tsv")
-
+cat("Graficos gerados com sucesso.\n")
 
 
 # Diagrama de controle
@@ -291,38 +291,16 @@ pop_list <- list(
 )
 years <- 2014:2025
 
+# Por estado
 pop_estados <- bind_rows(
   mapply(function(df, yr) {
     df |> group_by(uf) |> summarise(populacao = sum(populacao, na.rm = TRUE), .groups = "drop") |> mutate(ano = yr)
   }, pop_list, years, SIMPLIFY = FALSE)
 )
 
+# Brasil total
 pop_brasil <- pop_estados |>
   group_by(ano) |>
   summarise(populacao = sum(populacao, na.rm = TRUE), .groups = "drop") |>
   mutate(uf = "BR")
 
-
-plot_diagrama_pivot <- plot_diagrama |>
-  filter(week != 53) |>
-  select(uf, week, year, New_Cases) |>
-  pivot_wider(
-    names_from  = year,
-    values_from = New_Cases,
-    names_prefix = "casos_"
-  ) |>
-  arrange(uf, week)
-
-pop_estados_wide <- pop_estados |>
-  pivot_wider(names_from = ano, values_from = populacao, names_prefix = "pop_")
-
-pop_brasil_wide <- pop_brasil |>
-  pivot_wider(names_from = ano, values_from = populacao, names_prefix = "pop_")
-
-pop_pivot <- rbind(pop_estados_wide, pop_brasil_wide)
-
-plot_diagrama_pivot <- plot_diagrama_pivot |>
-  left_join(pop_pivot, by = "uf")
-
-write_tsv(plot_diagrama_pivot, file = "input/plot4_new.tsv")
-cat("Graficos gerados com sucesso.\n")

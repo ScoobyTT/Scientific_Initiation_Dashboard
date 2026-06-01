@@ -1,42 +1,44 @@
-dados_filtrados <- reactive({
+dados_filtrados_plot1 <- reactive({
   req(input$uf_filter)
   req(input$ano_filter)
   
-  dados <- plot1
+  dados_plot1 <- plot1_new
+  dados_plot1$months <- as.Date(dados_plot1$months)
   
   if (input$uf_filter != "Todos") {
-    dados <- dados %>% filter(abbrev_state == input$uf_filter)
+    dados_plot1 <- dados_plot1 %>% filter(abbrev_state == input$uf_filter)
   }else{
-    dados <- dados %>% filter(abbrev_state == "BR")
+    dados_plot1 <- dados_plot1 %>% filter(abbrev_state == "BR")
   }
   
   if (!is.null(input$ano_filter)) {
-  dados <- dados %>%
+    dados_plot1 <- dados_plot1 %>%
     filter(year(months) >= input$ano_filter[1],
            year(months) <= input$ano_filter[2])
 }
   
-  dados 
+  dados_plot1 
 })
 # Output do PRIMEIRO GRAFICO
 output$scatterplot <- renderPlot({
-  dados <- dados_filtrados()
-  
+  print(paste("1: ",names(plot1_new)))
+  dados_plot1 <- dados_filtrados_plot1()
+  print(paste("2: ",names(dados_plot1)))
   validate(need(
-    nrow(dados) > 0,
+    nrow(dados_plot1) > 0,
     "Nenhum dado disponível. Verifique se o arquivo foi carregado corretamente."
   ))
-  dados$months <- as.Date(dados$months) 
-  dados$New_Cases_Conf <- as.numeric(dados$New_Cases_Conf)  
-  dados$New_Cases_Noti <- as.numeric(dados$New_Cases_Noti)  
-  valor <- max(dados$New_Cases_Noti, na.rm = TRUE) / max(dados$New_Cases_Conf, na.rm = TRUE)
-  ggplot(dados) +
+  dados_plot1$months <- as.Date(dados_plot1$months) 
+  dados_plot1$New_Cases_Conf <- as.numeric(dados_plot1$New_Cases_Conf)  
+  dados_plot1$New_Cases_Noti <- as.numeric(dados_plot1$New_Cases_Noti)  
+  valorp1 <- max(dados_plot1$New_Cases_Noti, na.rm = TRUE) / max(dados_plot1$New_Cases_Conf, na.rm = TRUE)
+  ggplot(dados_plot1) +
     geom_col(aes(x = months, y = New_Cases_Noti, fill = "Notificados"), alpha = 0.7) +
-    geom_line(aes(x = months, y = New_Cases_Conf * valor, color = "Confirmados"), 
+    geom_line(aes(x = months, y = New_Cases_Conf * valorp1, color = "Confirmados"), 
               size = 1) +
     scale_y_continuous(
       name = "Casos Notificados", 
-      sec.axis = sec_axis(~./valor, name = 'Casos Confirmados')
+      sec.axis = sec_axis(~./valorp1, name = 'Casos Confirmados')
     ) +
     scale_fill_manual(name = "Tipo de Caso", values = c("Notificados" = "blue")) +
     scale_color_manual(name = "Tipo de Caso", values = c("Confirmados" = "firebrick")) +

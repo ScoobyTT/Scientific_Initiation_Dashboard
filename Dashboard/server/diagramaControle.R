@@ -17,7 +17,7 @@ dados_filtrados <- reactive({
   req(input$uf_filter)
   req(input$ano_filter)
   
-  dados <- plot1
+  dados <- plot1_new
   
   if (input$uf_filter != "Todos") {
     dados <- dados %>% filter(abbrev_state == input$uf_filter)

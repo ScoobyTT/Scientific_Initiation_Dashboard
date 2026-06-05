@@ -13,14 +13,13 @@ output$tabela_upload <- renderTable({
 #carrega os dados dos municipios e aplica no primeiro grafico
 
 plot1_new <- fread("input/plot_1.tsv")
-plot1_pred <- fread("input/plot1_pred.csv", colClasses = c(week = "character"))
+plot1_pred <-resultado_final #fread("input_old/predicoes_2026/plot1_pred_new.csv")
 plot3 <- fread("input/plot_3_pyramid.tsv")
 plot4 <- fread("input/plot4.tsv")
 plot2 <- fread("input/plot_tabela.tsv")
 plot5 <- fread("input/plot_mapa.tsv")
 cards <- fread("input/cardss.tsv")
 plot4_new <- fread("input/plot4_new.tsv")
-plot1_pred$week <- factor(plot1_pred$week)
 
 tabela_final <- select(plot2, name_region, name_state, incidenceNoti, incidenceConf)
 tabela_final$incidenceNoti <- round(as.numeric(tabela_final$incidenceNoti), 2)

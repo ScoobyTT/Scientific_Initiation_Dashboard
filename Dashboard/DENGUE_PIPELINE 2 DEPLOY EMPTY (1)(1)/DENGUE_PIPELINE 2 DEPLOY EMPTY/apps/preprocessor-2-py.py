@@ -91,7 +91,7 @@ for i in range(nweeks):
     if "." in weeks[i]:
         ano, semana = weeks[i].split('.')
         ano = int(ano)
-        semana = int(semana)+1 # TIVE QUE SOMAR +1 PARA BATER COM A REALIDADE DO ARQUIVO
+        semana = int(semana) # TIVE QUE SOMAR +1 PARA BATER COM A REALIDADE DO ARQUIVO
         weeks[i] = f"{ano:04d}.{semana:02d}"
     else:
         weeks[i] = f"{weeks[i]}.{1:02d}"

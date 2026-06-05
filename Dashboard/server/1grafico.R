@@ -13,9 +13,9 @@ dados_filtrados_plot1 <- reactive({
   
   if (!is.null(input$ano_filter)) {
     dados_plot1 <- dados_plot1 %>%
-    filter(year(months) >= input$ano_filter[1],
-           year(months) <= input$ano_filter[2])
-}
+      filter(year(months) >= input$ano_filter[1],
+             year(months) <= input$ano_filter[2])
+  }
   
   dados_plot1 
 })
@@ -48,29 +48,42 @@ output$scatterplot <- renderPlot({
     theme_minimal() +
     theme(legend.position = "bottom")
 })
-
-# Output da Previsão
-output$scatterplotPrev <- renderPlot({
-  validate(need(
-    nrow(plot1_pred) > 0,
-    "Nenhum dado disponível. Verifique se o arquivo foi carregado corretamente."
-  ))
+dados_filtrados_pred <- reactive({
+  req(input$uf_filter)
   
-  ggplot(plot1_pred, aes(x = week, y = cases, color = source, group = source)) +
-    geom_line(size = 1) +
+  dados <- resultado_final
+  
+  if (input$uf_filter != "Todos") {
+    dados <- dados %>% filter(abbrev_state == input$uf_filter)
+  } else {
+    dados <- dados %>% filter(abbrev_state == "BR")
+  }
+  
+  dados
+})
+output$scatterplotPrev <- renderPlot({
+  dados <- dados_filtrados_pred()
+  
+  validate(need(nrow(dados) > 0, "Nenhum dado disponível."))
+  
+  dados$week <- factor(dados$week, levels = sort(unique(dados$week)))
+  
+  ggplot(dados, aes(x = week, y = cases, color = source, group = 1)) +
+    geom_line(linewidth = 1) +
     geom_point(size = 2) +
-    geom_ribbon(data = subset(plot1_pred, source == "prediction"),
-                aes(x = week, ymin = lower_bound, ymax = upper_bound, fill = "prediction"),
-                alpha = 0.3) +
+    geom_ribbon(data = subset(dados, source == "predicted"),
+                aes(ymin = lower_bound, ymax = upper_bound, fill = "predicted", group = 1),
+                alpha = 0.3, color = NA) +
+    scale_x_discrete(breaks = levels(dados$week)[seq(1, nlevels(dados$week), by = 10)]) +
     scale_color_manual(values = c(
-      "dados_anteriores_não_utilizados" = "red",
-      "dados_de_entrada_usados" = "blue",
-      "previsão" = "black"
+      "previous_not_used_data" = "red",
+      "used_input_data" = "blue",
+      "predicted" = "black"
     )) +
-    scale_fill_manual(values = c("prediction" = "gray")) +
+    scale_fill_manual(values = c("predicted" = "gray")) +
     labs(x = "Semana Epidemiológica",
          y = "Casos semanais de dengue",
-         color = "Intervalor (source)",
+         color = "Fonte",
          fill = "Intervalo de previsão",
          title = "Previsão semanal de casos de dengue no Brasil") +
     theme_minimal() +
@@ -78,7 +91,6 @@ output$scatterplotPrev <- renderPlot({
           legend.position = "bottom")
 })
 
- 
 #extra_colunas <- dengue_data %>%
 #  mutate(months = as.Date(floor_date(Noti_Date, "month"))) %>%
 #  group_by(months, State, nome_munic, cod_municipio) %>%
@@ -131,4 +143,3 @@ observe({
     theme_set(theme_minimal(base_family = "DM Sans"))
   }
 })' 
-  

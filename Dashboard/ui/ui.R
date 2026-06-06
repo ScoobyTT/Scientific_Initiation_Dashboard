@@ -95,6 +95,8 @@ html[data-bs-theme='dark'] .bslib-input-dark-mode svg {
 
         /* Value boxes */
         .bslib-value-box {
+                          color: gray !important;
+
           border-radius: var(--radius) !important;
           border: none !important;
           box-shadow: 0 2px 12px rgba(0,0,0,0.07) !important;
@@ -107,17 +109,21 @@ html[data-bs-theme='dark'] .bslib-input-dark-mode svg {
         }
 
         .bslib-value-box .value-box-title {
+                  color: gray !important;
+
           font-size: 0.78rem !important;
           font-weight: 600 !important;
           letter-spacing: 0.06em !important;
           text-transform: uppercase !important;
           opacity: 0.85;
         }
-
-        .bslib-value-box .value-box-value {
-          font-size: 1.8rem !important;
+        
+          .bslib-value-box .value-box-value {
+          color: #1a1a2e !important;
+          font-size: clamp(0.9rem, 1.5vw, 1.8rem) !important;
           font-weight: 700 !important;
           letter-spacing: -0.03em !important;
+          white-space: nowrap !important;
         }
 
         /* Selectize */
@@ -171,6 +177,10 @@ html[data-bs-theme='dark'] .bslib-input-dark-mode svg {
           background: #161616 !important;
           border: 1px solid rgba(255,255,255,0.06) !important;
           box-shadow: 0 2px 16px rgba(0,0,0,0.3) !important;
+        }
+        html[data-bs-theme='dark'] .bslib-value-box .value-box-value *,
+        html[data-bs-theme='dark'] .bslib-value-box .value-box-title * {
+          color: #ffffff !important;
         }
 
         html[data-bs-theme='dark'] .card:hover {
@@ -269,20 +279,20 @@ html[data-bs-theme='dark'] .bslib-input-dark-mode svg {
       value_box(
         "Casos Confirmados",
         uiOutput("new_cases"),
-        showcase = bsicons::bs_icon("bookmark-plus"),
-        theme = "secondary"
+        showcase = bsicons::bs_icon("clipboard-check"),
+        theme = "success"
       ),
       value_box(
         "Óbitos Notificados",
         uiOutput("total_deaths"),
-        showcase = bsicons::bs_icon("person-fill-dash"),
+        showcase = bsicons::bs_icon("clipboard-check"),
         theme = "success"
       ),
       value_box(
         "Óbitos Confirmados",
         uiOutput("new_deaths",),
-        showcase = bsicons::bs_icon("person-fill-exclamation"),
-        theme = "danger"
+        showcase = bsicons::bs_icon("clipboard-check"),
+        theme = "success"
       )
     ),
     

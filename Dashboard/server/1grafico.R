@@ -51,7 +51,7 @@ output$scatterplot <- renderPlot({
 dados_filtrados_pred <- reactive({
   req(input$uf_filter)
   
-  dados <- resultado_final
+  dados <- plot1_pred
   
   if (input$uf_filter != "Todos") {
     dados <- dados %>% filter(abbrev_state == input$uf_filter)
@@ -67,8 +67,8 @@ output$scatterplotPrev <- renderPlot({
   validate(need(nrow(dados) > 0, "Nenhum dado disponível."))
   
   dados$week <- factor(dados$week, levels = sort(unique(dados$week)))
-  
-  ggplot(dados, aes(x = week, y = cases, color = source, group = 1)) +
+  names(plot1_pred)
+  ggplot(dados, aes(x = week, y = cases, color = source, group = source)) +
     geom_line(linewidth = 1) +
     geom_point(size = 2) +
     geom_ribbon(data = subset(dados, source == "predicted"),

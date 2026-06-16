@@ -96,7 +96,7 @@ else:
 print("model_run_code ",model_run_code)
 
 substr = "_*.csv"
-file2search = directory+"\\"+country+substr
+file2search = directory+"/"+country+substr
 all_files = glob.glob(file2search)
 
 # Check if any files are found
@@ -109,7 +109,7 @@ if len(all_files)>1:
     print("ERROR: multiple .csv files found in the directory.")
     sys.exit(1)  # Exit the script with an error code
     
-filename = all_files[0].replace('/','\\')
+filename = all_files[0]
 print(f'file found {filename}')
 
 # reading time series

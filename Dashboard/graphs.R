@@ -8,6 +8,22 @@ setwd("/data/")
 
 dengue_data <- fread("input/2014-2025_DENGUE_NOTIFICADOS_dash_new.tsv")
 dengue_conf <- fread("input/2014-2025_DENGUE_CONFIRMADOS_dash_new.tsv")
+
+dengue_conf$State[which(is.na(dengue_conf$uf))] <- substr(dengue_conf$City[which(is.na(dengue_conf$uf))], 1, 2)
+uf_map <- c(
+  "11"="RO","12"="AC","13"="AM","14"="RR","15"="PA","16"="AP","17"="TO",
+  "21"="MA","22"="PI","23"="CE","24"="RN","25"="PB","26"="PE","27"="AL","28"="SE","29"="BA",
+  "31"="MG","32"="ES","33"="RJ","35"="SP",
+  "41"="PR","42"="SC","43"="RS",
+  "50"="MS","51"="MT","52"="GO","53"="DF"
+)
+
+idx <- is.na(dengue_conf$uf)
+
+dengue_conf$uf[idx] <- uf_map[
+  as.character(dengue_conf$State[idx])
+]
+
 pop    <- ribge::populacao_municipios(2024)
 estado <- readRDS("input/estados.rds")
 
@@ -26,6 +42,7 @@ dengue_conf <- dengue_conf %>%
   )
 
 dengue_conf$months <- paste0(format(dengue_conf$Noti_Date, "%Y-%m"),"-01")
+
 
 # Grafico 1
 dengue_data_agre_n <- dengue_data %>%

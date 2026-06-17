@@ -1,2 +1,3 @@
-directory_of_data: ../data
-data_file: new_new_selected_dengue_data_utf8.csv
+Preprocessor Script (author: Dr. Diego Frias, 2023, diegofriass@gmail.com)
+directory_of_data: /home/christian/Scientific_Initiation_Dashboard/Dashboard/input_old/predicoes_2026/
+data_file: arquivo_tratamento.csv

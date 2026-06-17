@@ -39,7 +39,7 @@ fi
 while IFS= read -r country; do
  
     # Execute the Python program with the directory and country as separate arguments
-    python ../apps/trainer-2-py.py --directory "${directory_of_countries}" --country "${country}"
+    python3 ../apps/trainer-2-py.py --directory "${directory_of_countries}" --country "${country}"
     
     # Check the exit status of the last command
     if [ $? -eq 0 ]; then

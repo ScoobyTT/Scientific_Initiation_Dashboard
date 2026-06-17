@@ -35,6 +35,6 @@ if [ ! -f "$full_path_to_data_file" ]; then
 fi
 
 # Execute the Python program with the directory and country as separate arguments
-python ../apps/preprocessor-2-py.py --directory "${directory_of_data}" --file "${data_file}"
+python3 ../apps/preprocessor-2-py.py --directory "${directory_of_data}" --file "${data_file}"
 
 echo "PREPROCESSING TASK ENDED ................."

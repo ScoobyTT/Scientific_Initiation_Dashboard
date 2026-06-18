@@ -3,6 +3,8 @@ library(tidyverse)
 library(ribge)
 library(geobr)
 library(sf)
+library(dplyr)
+library(tidyr)
 
 setwd("/data/")
 
@@ -321,3 +323,58 @@ pop_brasil <- pop_estados |>
   summarise(populacao = sum(populacao, na.rm = TRUE), .groups = "drop") |>
   mutate(uf = "BR")
 
+
+####################################################### SISTEMA DE PREDICAO
+
+conf_pred <- dengue_conf %>%
+  group_by(Noti_Week, uf) %>%
+  summarise(total = n()) %>%
+  drop_na()
+
+
+datas_n <- names(table(conf_pred$Noti_Week)) 
+
+conf_pred_br <- conf_pred[0, ]
+for(i in 1:length(datas_n)){
+  conf_pred_br[i, ] <- NA
+  conf_pred_br$Noti_Week[i] <- datas_n[i]
+  conf_pred_br$uf[i] <- "BR"
+  conf_pred_br$total[i] <- sum(conf_pred$total[which(conf_pred$Noti_Week == datas_n[i])])
+}
+
+conf_pred_br$Noti_Week <- as.numeric(conf_pred_br$Noti_Week)
+conf_pred$Noti_Week <- as.numeric(conf_pred$Noti_Week)
+
+conf_pred_final <- rbind(conf_pred_br, conf_pred)
+
+conf_pred_final$year <- substr(conf_pred_final$Noti_Week, 1, 4)
+conf_pred_final$week <- substr(conf_pred_final$Noti_Week, 5, 7) 
+
+conf_pred_final_prep <- conf_pred_final %>%
+  pivot_wider(
+    id_cols = uf,
+    names_from = c(year, week),
+    values_from = total,
+    values_fill = 0,
+    names_sep = "_"
+  )
+
+colunas <- names(conf_pred_final_prep)[-1]
+
+linha_anos <- c("", sub("_.*", "", colunas))
+linha_semanas <- c("", sub(".*_", "", colunas))
+
+conf_pred_final_v1 <- rbind(
+  linha_anos,
+  linha_semanas,
+  as.matrix(conf_pred_final_prep)
+)
+
+conf_pred_final_v1[2,1] <- "Pais"
+conf_pred_final_v1[1,1] <- "0"
+write.table(conf_pred_final_v1,
+          "/home/christian/Scientific_Initiation_Dashboard/Dashboard/input_old/predicoes_2026/arquivo_tratamento.csv",
+          sep = ",",
+          row.names = FALSE,
+          col.names = FALSE,
+          quote = FALSE)

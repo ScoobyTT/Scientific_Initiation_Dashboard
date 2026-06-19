@@ -82,7 +82,7 @@ else:
 print("run_code ",run_code)
 
 substr = "_*.csv"
-file2search = directory+"\\"+country+substr
+file2search = directory+"/"+country+substr
 all_files = glob.glob(file2search)
 
 # Check if any files are found
@@ -95,7 +95,7 @@ if len(all_files)>1:
     print("ERROR: multiple .csv files found in the directory.")
     sys.exit(1)  # Exit the script with an error code
     
-filename = all_files[0].replace('/','\\')
+filename = all_files[0].replace('/','/')
 print(f'file found {filename}')
 
 # Load epidemiological data (cases timeseries)
@@ -104,7 +104,7 @@ data = pd.read_csv(filename)
     
 series = data['Smoothed Dengue Cases'].values.reshape(-1, 1)
 
-output_path_training_test = '..\\results\\training_and_test\\'+run_code
+output_path_training_test = '../results/training_and_test/'+run_code
 
 if os.path.exists(output_path_training_test):
     print(f"output directory {output_path_training_test} already exists. files will be rewritten ....")# If it exists, remove it
@@ -113,7 +113,7 @@ else:
     os.makedirs(output_path_training_test)
     print(f"created output directory {output_path_training_test}")
     
-output_path_model = '..\\results\\models\\'+run_code
+output_path_model = '../results/models/'+run_code
 
 if os.path.exists(output_path_model):
     print(f"output directory {output_path_model} already exists. files will be rewritten ....")# If it exists, remove it
@@ -127,7 +127,7 @@ scaler = MinMaxScaler()
 series = scaler.fit_transform(series)
 
 # Save the scaler to the model directory
-joblib.dump(scaler, output_path_model+'\\'+country+'_scaler.pkl')
+joblib.dump(scaler, output_path_model+'/'+country+'_scaler.pkl')
 
 # Split the data into training and test sets
 train_size = int(len(series) * 0.7)
@@ -148,7 +148,7 @@ plt.grid()
 plt.xlabel("epidemic week")
 plt.ylabel("dengue weekly cases")
 plt.title("time series interval for TRAINING at "+country)
-plt.savefig(output_path_training_test+'\\'+country+'_training_series.jpg', format='jpeg', dpi=300, bbox_inches='tight')
+plt.savefig(output_path_training_test+'/'+country+'_training_series.jpg', format='jpeg', dpi=300, bbox_inches='tight')
 plt.close()
 # time interval for test plot
 test_weeks = df_test["Date"]
@@ -161,7 +161,7 @@ plt.grid()
 plt.xlabel("epidemic week")
 plt.ylabel("dengue weekly cases")
 plt.title("time series interval for TESTING at "+country)
-plt.savefig(output_path_training_test+'\\'+country+'_test_series.jpg', format='jpeg', dpi=300, bbox_inches='tight')
+plt.savefig(output_path_training_test+'/'+country+'_test_series.jpg', format='jpeg', dpi=300, bbox_inches='tight')
 plt.close()
 
 print(f"saved training and test timeseries for country {country}")
@@ -237,7 +237,7 @@ for run in range(nruns):
     history = model.fit(X_train, y_train, epochs = fact * epochs_by_fact, \
                         batch_size = fact * 8, validation_split = 0.1, verbose=0) # era 8
     Model.append(model)
-    model.save(output_path_model+'\\'+country+'_model_'+str(run)+".h5")
+    model.save(output_path_model+'/'+country+'_model_'+str(run)+".h5")
     
     # Visualize training and validation loss
     plt.figure(figsize=(4,1))
@@ -247,7 +247,7 @@ for run in range(nruns):
     plt.ylabel('Loss')
     plt.title('Training and Validation Loss @ Run '+str(run+1))
     plt.legend()
-    plt.savefig(output_path_training_test+'\\'+country+'_loss_of_model'+str(run+1)+'.jpg', format='jpeg', dpi=300, bbox_inches='tight')
+    plt.savefig(output_path_training_test+'/'+country+'_loss_of_model'+str(run+1)+'.jpg', format='jpeg', dpi=300, bbox_inches='tight')
     plt.close()
 
     print(f"loss saved ....")
@@ -358,7 +358,7 @@ for i in range(prediction_interval): # loop for prediction_interval
     # plt.ylim([0,1.05*np.max([predictions,Y_test])])
     plt.legend()
     plt.grid()
-    plt.savefig(output_path_training_test+'\\'+country+'_test_result_grayzone_week'+str(i+1+forward_step-1)+'.jpg', format='jpeg', dpi=300, bbox_inches='tight')
+    plt.savefig(output_path_training_test+'/'+country+'_test_result_grayzone_week'+str(i+1+forward_step-1)+'.jpg', format='jpeg', dpi=300, bbox_inches='tight')
     print("prediction on test interval saved ...")
     plt.close()
 
@@ -403,7 +403,7 @@ for i in range(prediction_interval):
     plt.title("predicting "+str(i+1)+" week(s) ahead, \naverage MAPE= {:.2f}".format(mean_mape)+" %")#+\
 #              "stdev = {:.2f}".format(std_mape)+" %")
     plt.grid()
-    plt.savefig(output_path_training_test+'\\'+country+'_pred_data_correlation_week'+str(i+1+forward_step-1)+'.jpg', format='jpeg', dpi=300, bbox_inches='tight')
+    plt.savefig(output_path_training_test+'/'+country+'_pred_data_correlation_week'+str(i+1+forward_step-1)+'.jpg', format='jpeg', dpi=300, bbox_inches='tight')
     print("correlation saved ...")
     plt.close()
 
@@ -453,7 +453,7 @@ for i in range(prediction_interval):
     plt.title('Original and Predicted Data for '+country+' @ week +'+str(i+1+forward_step-1)+\
               '\nLower and Upper Bounds with {:.2f}'.format(1-alpha)+' Confidence Interval')
     plt.grid()
-    plt.savefig(output_path_training_test+'\\'+country+'_test_result_low_and_upper_bounds_week'+str(i+1+forward_step-1)+'.jpg', format='jpeg', dpi=300, bbox_inches='tight')
+    plt.savefig(output_path_training_test+'/'+country+'_test_result_low_and_upper_bounds_week'+str(i+1+forward_step-1)+'.jpg', format='jpeg', dpi=300, bbox_inches='tight')
     print(f"saving figure to file")
     plt.close()
 
@@ -461,7 +461,6 @@ for i in range(prediction_interval):
 
 
 # In[ ]:
-
 
 
 

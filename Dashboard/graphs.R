@@ -302,13 +302,14 @@ pop2022 <- ribge::populacao_municipios(2022)
 pop2023 <- ribge::populacao_municipios(2022)
 pop2024 <- ribge::populacao_municipios(2024)
 pop2025 <- ribge::populacao_municipios(2025)
+pop2026 <- ribge::populacao_municipios(2026)
 
 
 pop_list <- list(
   pop2014, pop2015, pop2016, pop2017, pop2018, pop2019,
-  pop2020, pop2021, pop2022, pop2023, pop2024, pop2025
+  pop2020, pop2021, pop2022, pop2023, pop2024, pop2025, pop2026
 )
-years <- 2014:2025
+years <- 2014:2026
 
 # Por estado
 pop_estados <- bind_rows(

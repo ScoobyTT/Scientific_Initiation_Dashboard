@@ -1,6 +1,6 @@
 Predictor Script (author: Dr. Diego Frias, 2023, diegofriass@gmail.com)
-directory_of_data: /home/christian/Scientific_Initiation_Dashboard/Dashboard/input_old/08.06.2026_20h_training_data
-directory_of_model: /home/christian/Scientific_Initiation_Dashboard/Dashboard/DENGUE_PIPELINE 2 DEPLOY EMPTY (1)(1)/DENGUE_PIPELINE 2 DEPLOY EMPTY/results/models/03.06.2026_19h
-countries_file: country_list_br.txt
+directory_of_data: ../data/17.06.2026_20h_training_data
+directory_of_model: ../results/models/17.06.2026_20h
+countries_file: country_list.txt
 Script executed successfully for country BR
 PREDICTION TASK ENDED !

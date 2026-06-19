@@ -43,7 +43,7 @@ fi
 # Loop over each country in the file
 while IFS= read -r country; do
     # Execute the Python program with the directory and country as separate arguments
-    python3 ../apps/predictor-2-py.py --data_directory "${directory_of_data}" --model_directory "${directory_of_model}" --country "${country}"
+    python3 ../apps/predictor_v3.py --data_directory "${directory_of_data}" --model_directory "${directory_of_model}" --country "${country}"
     # Check the exit status of the last command
     if [ $? -eq 0 ]; then
         echo "Script executed successfully for country ${country}"

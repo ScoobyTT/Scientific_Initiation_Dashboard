@@ -362,4 +362,3 @@ for i in range(nctry):
 #     output_file = f'new_dataset_dir\{countries[i]}_time_series_weeks_{weeks[0]}-{weeks[-1]}.csv'
     # Save the DataFrame to a CSV file
     df.to_csv(output_file, index=False)
-

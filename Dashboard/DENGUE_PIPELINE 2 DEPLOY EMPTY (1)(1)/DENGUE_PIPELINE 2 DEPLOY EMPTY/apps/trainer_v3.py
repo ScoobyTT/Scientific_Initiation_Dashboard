@@ -7,8 +7,8 @@
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import LSTM, Dense
+import torch
+import torch.nn as nn
 import matplotlib.pyplot as plt
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 import time
@@ -224,61 +224,105 @@ Predictions = []
 nruns = 50
 epochs_by_fact = 25
 
-tic=time.time()
-for run in range(nruns):
-    
-    print(f"model {run}/{nruns} is being trained")
-    model = Sequential()
-    model.add(LSTM(fact * 120, activation='relu', input_shape=(history_step,1))) # era 80
-    model.add(Dense(prediction_interval))
-    model.compile(optimizer='adam', loss='mean_squared_error')
+# Definição do modelo PyTorch (idêntico ao predictor_v3.py)
+class DengueLSTM(nn.Module):
+    def __init__(self, input_size, hidden_size, output_size):
+        super().__init__()
+        self.lstm  = nn.LSTM(input_size=input_size, hidden_size=hidden_size,
+                             num_layers=1, batch_first=True)
+        self.relu  = nn.ReLU()
+        self.dense = nn.Linear(hidden_size, output_size)
 
-    # Train the model
-    history = model.fit(X_train, y_train, epochs = fact * epochs_by_fact, \
-                        batch_size = fact * 8, validation_split = 0.1, verbose=0) # era 8
+    def forward(self, x):
+        out, _ = self.lstm(x)
+        last   = out[:, -1, :]
+        last   = self.relu(last)
+        return self.dense(last)
+
+# Detecta dispositivo
+if torch.cuda.is_available():
+    device = torch.device("cuda")
+else:
+    device = torch.device("cpu")
+print(f"Dispositivo: {device}")
+
+# Converte dados pra tensores PyTorch
+X_train_t = torch.tensor(X_train, dtype=torch.float32).to(device)
+y_train_t  = torch.tensor(y_train.reshape(-1, prediction_interval), dtype=torch.float32).to(device)
+X_test_t   = torch.tensor(X_test,  dtype=torch.float32).to(device)
+
+# Parâmetros
+hidden_size   = fact * 120
+epochs        = fact * epochs_by_fact
+batch_size    = fact * 8
+val_split     = 0.1
+n_val         = int(len(X_train_t) * val_split)
+n_train       = len(X_train_t) - n_val
+
+X_tr, X_val   = X_train_t[:n_train], X_train_t[n_train:]
+y_tr, y_val   = y_train_t[:n_train], y_train_t[n_train:]
+
+criterion = nn.MSELoss()
+
+tic = time.time()
+for run in range(nruns):
+    print(f"model {run}/{nruns} is being trained")
+
+    model = DengueLSTM(input_size=1, hidden_size=hidden_size,
+                       output_size=prediction_interval).to(device)
+    optimizer = torch.optim.Adam(model.parameters())
+
+    train_losses, val_losses = [], []
+
+    for epoch in range(epochs):
+        model.train()
+        # mini-batches
+        perm = torch.randperm(n_train)
+        epoch_loss = 0.0
+        for i in range(0, n_train, batch_size):
+            idx     = perm[i:i+batch_size]
+            xb, yb  = X_tr[idx], y_tr[idx]
+            optimizer.zero_grad()
+            loss = criterion(model(xb), yb)
+            loss.backward()
+            optimizer.step()
+            epoch_loss += loss.item() * len(idx)
+        train_losses.append(epoch_loss / n_train)
+
+        model.eval()
+        with torch.no_grad():
+            val_loss = criterion(model(X_val), y_val).item()
+        val_losses.append(val_loss)
+
     Model.append(model)
-    model.save(output_path_model+'/'+country+'_model_'+str(run)+".h5")
-    
-    # Visualize training and validation loss
+    torch.save(model.state_dict(),
+               output_path_model+'/'+country+'_model_'+str(run)+".pt")
+
+    # Gráfico de loss
     plt.figure(figsize=(4,1))
-    plt.plot(history.history['loss'], label='Training Loss')
-    plt.plot(history.history['val_loss'], label='Validation Loss')
+    plt.plot(train_losses, label='Training Loss')
+    plt.plot(val_losses,   label='Validation Loss')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.title('Training and Validation Loss @ Run '+str(run+1))
     plt.legend()
-    plt.savefig(output_path_training_test+'/'+country+'_loss_of_model'+str(run+1)+'.jpg', format='jpeg', dpi=300, bbox_inches='tight')
+    plt.savefig(output_path_training_test+'/'+country+'_loss_of_model'+str(run+1)+'.jpg',
+                format='jpeg', dpi=300, bbox_inches='tight')
     plt.close()
-
     print(f"loss saved ....")
-    # Make predictions on test data
 
-#     print("X_test shape ",X_test.shape)
-    predictions = model.predict(X_test,verbose=0)
-#     print("predictions shape ",predictions.shape)
+    # Predição no teste
+    model.eval()
+    with torch.no_grad():
+        predictions = model(X_test_t).cpu().numpy()
 
-    # Reshape y_test to a 2-dimensional array
-    Y_test = y_test.reshape(-1,prediction_interval)
-#     print("Y_test shape ",Y_test.shape)
-
-    # Desnormalize the predictions and targets
+    Y_test = y_test.reshape(-1, prediction_interval)
     predictions = scaler.inverse_transform(predictions)
-    Y_test = scaler.inverse_transform(Y_test)
-
+    Y_test      = scaler.inverse_transform(Y_test)
     Predictions.append(predictions)
-    # Calculate appropriate performance metrics for time series prediction
-
-#     mse = mean_squared_error(Y_test, predictions)
-#     mae = mean_absolute_error(Y_test, predictions)
-#     rmse = np.sqrt(mse)
-
-#     print(f"Mean Squared Error (MSE): {mse}")
-#     print(f"Mean Absolute Error (MAE): {mae}")
-#     print(f"Root Mean Squared Error (RMSE): {rmse}")
 
 print("time per run ", ((time.time()-tic)/60/nruns)," minutes")
 print("total time with ",nruns," runs : ",(time.time()-tic)/60," minutes")
-
 
 # In[10]:
 

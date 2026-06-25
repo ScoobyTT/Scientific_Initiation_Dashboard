@@ -26,3 +26,6 @@ Dashboard/input/dengue_raw.zip
 Dashboard/input_old/
 *.h5
 *.pkl
+Dashboard/DENGUE_PIPELINE*/results/models/
+Dashboard/DENGUE_PIPELINE*/results/training_and_test/
+Dashboard/DENGUE_PIPELINE*/data/*_training_data/

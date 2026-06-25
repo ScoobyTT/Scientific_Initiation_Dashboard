@@ -65,7 +65,7 @@ output$scatterplotPrev <- renderPlot({
   dados <- dados_filtrados_pred()
   
   validate(need(nrow(dados) > 0, "Nenhum dado disponível."))
-  
+  #cases
   dados$week <- factor(dados$week, levels = sort(unique(dados$week)))
   names(plot1_pred)
   ggplot(dados, aes(x = week, y = cases, color = source, group = source)) +

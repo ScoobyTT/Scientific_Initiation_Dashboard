@@ -13,7 +13,7 @@ output$tabela_upload <- renderTable({
 #carrega os dados dos municipios e aplica no primeiro grafico
 
 plot1_new <- fread("input/plot_1.tsv")
-plot1_pred <- fread("/home/christian/Scientific_Initiation_Dashboard/Dashboard/input_old/predicoes_2026/plot1_pred_completo.csv")
+plot1_pred <- fread("/home/christian/Scientific_Initiation_Dashboard/Dashboard/input_old/predicoes_todos_estados.csv")
 plot3 <- fread("input/plot_3_pyramid.tsv")
 plot4 <- fread("input/plot4.tsv")
 plot2 <- fread("input/plot_tabela.tsv")
@@ -35,8 +35,43 @@ if (!file.exists(municipios_path)) {
 } else {
   municipios <- readRDS(municipios_path)
 }
+' 
+a = plot1_pred %>%
+rename(cases = Mean_Prediction)
 
-
+plot1_pred <- plot1_pred %>%
+  mutate(abbrev_state = case_when(
+    abbrev_state == "Acre" ~ "AC",
+    abbrev_state == "Alagoas" ~ "AL",
+    abbrev_state == "Amapa" ~ "AP",
+    abbrev_state == "Amazonas" ~ "AM",
+    abbrev_state == "Bahia" ~ "BA",
+    abbrev_state == "Ceara" ~ "CE",
+    abbrev_state == "Distrito Federal" ~ "DF",
+    abbrev_state == "Espirito Santo" ~ "ES",
+    abbrev_state == "Goais" ~ "GO",
+    abbrev_state == "Maranhao" ~ "MA",
+    abbrev_state == "Mato Grosso" ~ "MT",
+    abbrev_state == "Mato Grosso do Sul" ~ "MS",
+    abbrev_state == "Minas Gerais" ~ "MG",
+    abbrev_state == "Para" ~ "PA",
+    abbrev_state == "Paraiba" ~ "PB",
+    abbrev_state == "Parana" ~ "PR",
+    abbrev_state == "Pernambuco" ~ "PE",
+    abbrev_state == "Piaui" ~ "PI",
+    abbrev_state == "Rio de Janeiro" ~ "RJ",
+    abbrev_state == "Rio Grande do Norte" ~ "RN",
+    abbrev_state == "Rio Grande do Sul" ~ "RS",
+    abbrev_state == "Rondonia" ~ "RO",
+    abbrev_state == "Roraima" ~ "RR",
+    abbrev_state == "Santa Catarina" ~ "SC",
+    abbrev_state == "Sao Paulo" ~ "SP",
+    abbrev_state == "Sergipe" ~ "SE",
+    abbrev_state == "Tocantins" ~ "TO",
+    abbrev_state == "Brasil" ~ "BR",
+    TRUE ~ abbrev_state
+  ))
+' 
 
 # dengue <- fread("input/2014-2025_DENGUE_CONFIRMADOS.tsv")
 # 

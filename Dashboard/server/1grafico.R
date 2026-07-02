@@ -13,8 +13,9 @@ dados_filtrados_plot1 <- reactive({
   
   if (!is.null(input$ano_filter)) {
     dados_plot1 <- dados_plot1 %>%
-      filter(year(months) >= input$ano_filter[1],
-             year(months) <= input$ano_filter[2])
+      filter(as.integer(year(months)) >= input$ano_filter[1],
+             as.integer(year(months)) <= input$ano_filter[2])
+  
   }
   
   dados_plot1 

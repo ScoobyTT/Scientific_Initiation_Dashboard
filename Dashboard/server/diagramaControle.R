@@ -35,12 +35,11 @@ dados_filtrados <- reactive({
   
   if (!is.null(input$ano_filter)) {
     anos <- input$ano_filter[1]:input$ano_filter[2]
-  }else{
-    anos <- 2014:2025
-  }
-  cols_casos <- paste0("casos_", anos)
-  cols_pop   <- paste0("pop_", anos)
-  
+    cols_casos <- paste0("casos_", anos)
+    cols_casos <- cols_casos[cols_casos %in% names(plot4_new)]
+    cols_pop   <- paste0("pop_", anos)
+    cols_pop   <- cols_pop[cols_pop %in% names(plot4_new)]
+    }
   df_filtrado <- plot4_new |>
     select(uf, week, all_of(cols_casos), all_of(cols_pop))
   

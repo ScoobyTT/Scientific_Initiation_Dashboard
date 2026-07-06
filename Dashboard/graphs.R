@@ -36,6 +36,7 @@ dengue_data <- dengue_data %>%
   )
 
 dengue_data$months <- paste0(format(dengue_data$Noti_Date, "%Y-%m"),"-01")
+dengue_conf$State <- as.numeric(dengue_conf$State)
 
 dengue_conf <- dengue_conf %>%
   left_join(
@@ -302,14 +303,14 @@ pop2022 <- ribge::populacao_municipios(2022)
 pop2023 <- ribge::populacao_municipios(2022)
 pop2024 <- ribge::populacao_municipios(2024)
 pop2025 <- ribge::populacao_municipios(2025)
-pop2026 <- ribge::populacao_municipios(2026)
+#pop2026 <- ribge::populacao_municipios(2026)
 
 
 pop_list <- list(
   pop2014, pop2015, pop2016, pop2017, pop2018, pop2019,
-  pop2020, pop2021, pop2022, pop2023, pop2024, pop2025, pop2026
+  pop2020, pop2021, pop2022, pop2023, pop2024, pop2025
 )
-years <- 2014:2026
+years <- 2014:2025
 
 # Por estado
 pop_estados <- bind_rows(
@@ -374,7 +375,7 @@ conf_pred_final_v1 <- rbind(
 conf_pred_final_v1[2,1] <- "Pais"
 conf_pred_final_v1[1,1] <- "0"
 write.table(conf_pred_final_v1,
-          "/home/christian/Scientific_Initiation_Dashboard/Dashboard/input_old/predicoes_2026/arquivo_tratamento.csv",
+          "/data/input/arquivo_tratamento.csv",
           sep = ",",
           row.names = FALSE,
           col.names = FALSE,

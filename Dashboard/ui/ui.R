@@ -251,8 +251,8 @@ html[data-bs-theme='dark'] .bslib-input-dark-mode svg {
                 inputId = "ano_filter",
                 label = "Ano:",
                 min = 2014,
-                max = 2025,
-                value = c(2014, 2025),  # intervalo padrão (dois handles)
+                max = 2026,
+                value = c(2014, 2026),  # intervalo padrão (dois handles)
                 step = 1,
                 sep = ""  # remove o separador de milhar (evita "2.014")
               )

@@ -30,7 +30,7 @@ output$mapaGeral_ou_mapaBrasilia <- renderUI({
 dados_filtradosMP2 <- reactive({
   req(input$uf_filter)
   
-  dados <- plot5s
+  dados <- plot5
   
   if (input$uf_filter != "Todos") {
     dados <- dados %>% filter(abbrev_state == input$uf_filter)

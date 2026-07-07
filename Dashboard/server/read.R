@@ -24,7 +24,7 @@ output$tabela_upload <- renderTable({
 #carrega os dados dos municipios e aplica no primeiro grafico
 
 plot1_new <- fread("input/plot_1.tsv")
-plot1_pred <- fread("/home/christian/Scientific_Initiation_Dashboard/Dashboard/input_old/predicoes_todos_estados.csv")
+plot1_pred <- fread("input_old/predicoes_todos_estados.csv")
 plot3 <- fread("input/plot_3_pyramid.tsv")
 plot4 <- fread("input/plot4.tsv")
 plot2 <- fread("input/plot_tabela.tsv")

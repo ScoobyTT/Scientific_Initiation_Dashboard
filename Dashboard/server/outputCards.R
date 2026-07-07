@@ -6,6 +6,7 @@ dados_filtradosC <- reactive({
   
   if (input$uf_filter != "Todos") {
     dados <- cards %>%
+      filter(abbrev_state == input$uf_filter)%>%
       mutate(ano = as.integer(format(as.Date(months), "%Y")))
   }
   

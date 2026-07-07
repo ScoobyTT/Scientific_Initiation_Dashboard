@@ -45,8 +45,15 @@ output$table <- DT::renderDataTable({
   req(dados_filtradosTAB())  
   DT::datatable(
     dados_filtradosTAB(),  
-    options = list(pageLength = 10), 
+    options = list(
+      scrollX = TRUE,
+      scrollY = "400px",
+      pageLength = 10,
+      dom = 'frtip'
+    ),
+    style = "bootstrap5",
+    class = "table table-striped table-hover",
+    width = "100%",
     rownames = FALSE
   )
 })
-

@@ -131,6 +131,7 @@ myfiles <- list.files(paste0(dir, "tsv/"), pattern = paste0(SUF, "*"))
 myfiles <- myfiles[13:length(myfiles)]
 calendario <- fread(paste0(dir, "sinan_calendario.txt"))
 confirmados <- TRUE #agora vou gerar o confirmados
+#corrrecao
 for(i in startFile:length(myfiles)){
   tempFile <- fread(paste0(dir, "tsv/", myfiles[i]), stringsAsFactors = FALSE, showProgress = FALSE)
   myYearCalen <- paste0(20,str_replace_all(myfiles[i], "[^0-9]", ""))

@@ -13,7 +13,7 @@ library(devtools)
 # devtools::install_github("danicat/read.dbc")
 
 
-dir <- "/home/christian/Scientific_Initiation_Dashboard/Dashboard/input/"
+dir <- "/data/input/"
 B_fin <- paste0(dir, "finais/")
 B_par <- paste0(dir, "parciais/")
 SUF <- c("DENG")

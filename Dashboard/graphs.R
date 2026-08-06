@@ -278,10 +278,10 @@ plot_diagrama$week <- substr(plot_diagrama$Noti_Week, 5, 6)
 weeks <- names(table(plot_diagrama$Noti_Week))
 
 plot_diagrama_br <- plot_diagrama[0, ]
-
+CODIGO_BRASIL <- 71 
 for (i in 1:length(weeks)){
   plot_diagrama_br[i, ] <- NA
-  plot_diagrama_br$State[i] <- 71
+  plot_diagrama_br$State[i] <- CODIGO_BRASIL
   plot_diagrama_br$uf[i] <- "BR"
   plot_diagrama_br$Noti_Week[i] <- weeks[i]
   plot_diagrama_br$year[i] <- substr(weeks[i], 1, 4)
@@ -290,27 +290,10 @@ for (i in 1:length(weeks)){
 }
 
 plot_diagrama <- rbind(plot_diagrama, plot_diagrama_br)
-
-pop2014 <- ribge::populacao_municipios(2014)
-pop2015 <- ribge::populacao_municipios(2015)
-pop2016 <- ribge::populacao_municipios(2016)
-pop2017 <- ribge::populacao_municipios(2017)
-pop2018 <- ribge::populacao_municipios(2018)
-pop2019 <- ribge::populacao_municipios(2019)
-pop2020 <- ribge::populacao_municipios(2020)
-pop2021 <- ribge::populacao_municipios(2021)
-pop2022 <- ribge::populacao_municipios(2022)
-pop2023 <- ribge::populacao_municipios(2022)
-pop2024 <- ribge::populacao_municipios(2024)
-pop2025 <- ribge::populacao_municipios(2025)
-#pop2026 <- ribge::populacao_municipios(2026)
-
-
-pop_list <- list(
-  pop2014, pop2015, pop2016, pop2017, pop2018, pop2019,
-  pop2020, pop2021, pop2022, pop2023, pop2024, pop2025
-)
-years <- 2014:2025
+#Hardcode para ano eliminado
+years <- sort(unique(as.integer(plot_diagrama$year)))
+pop_list <- lapply(years, ribge::populacao_municipios)
+names(pop_list) <- years
 
 # Por estado
 pop_estados <- bind_rows(

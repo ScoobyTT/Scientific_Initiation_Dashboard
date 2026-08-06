@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DASHBOARD_DIR="/home/christian/Scientific_Initiation_Dashboard/Dashboard"
-LOG_DIR="/home/christian/Scientific_Initiation_Dashboard/logs"
+DASHBOARD_DIR="$(cd "$(dirname "$0")" && pwd)"
+LOG_DIR="${DASHBOARD_DIR}/logs"
 LOG_FILE="${LOG_DIR}/pipeline_$(date +%Y-%m-%d).log"
 IMAGE_NAME="dengue-pipeline"
 

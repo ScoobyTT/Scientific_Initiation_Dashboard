@@ -1,0 +1,120 @@
+sudo apt update
+sudo apt list --upgradable
+sudo apt upgrade
+sudo apt autoremove
+
+sudo apt install build-essential
+sudo apt install -y zlib1g-dev
+sudo apt install -y pkg-config
+sudo apt install -y libpng-dev python3-matplotlib git python3-pip default-jdk default-jre curl software-properties-common net-tools openssh-server openssh-client
+sudo apt install -y git python3-pip autoconf automake libtool libfreetype6-dev libcurl3-dev libcurl4-openssl-dev libssl-dev cmake libgdal-dev subversion libgeos* geos* maptool* libtiff*
+sudo apt install -y openjdk-21-jre-headless openjdk-21-jdk libbz2-dev libcairo2-dev libudunits2-dev libgdal-dev libgeos-dev libproj-dev libharfbuzz-dev libfribidi-dev libtiff5-dev libfontconfig1-dev
+sudo apt install -y gfortran libgfortran-*
+sudo apt-get install libgdal-dev
+sudo apt-get install gdal-bin
+
+sudo apt install -y minimap2 bwa bcftools bedtools samtools pilon fastqc trimmomatic mafft iqtree muscle bowtie2 seqtk ncbi-blast+ spades python3-treetime seqkit
+
+sudo apt update -qq
+sudo apt install --no-install-recommends software-properties-common dirmngr
+wget -qO- https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc | sudo tee -a /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+sudo add-apt-repository "deb https://cloud.r-project.org/bin/linux/ubuntu $(lsb_release -cs)-cran40/"
+sudo apt install --no-install-recommends r-base
+
+cd ~/Downloads
+wget https://download1.rstudio.org/electron/jammy/amd64/rstudio-2025.05.1-513-amd64.deb
+sudo dpkg -i rstudio-2025.05.1-513-amd64.deb
+sudo apt install -f
+
+wget https://vscode.download.prss.microsoft.com/dbazure/download/stable/384ff7382de624fb94dbaf6da11977bba1ecd427/code_1.94.2-1728494015_amd64.deb
+sudo dpkg -i code_1.94.2-1728494015_amd64.deb
+
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh| bash
+export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")" 
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+nvm install 20
+
+wget http://download.osgeo.org/geos/geos-3.13.0.tar.bz2
+bunzip2 geos-3.13.0.tar.bz2
+tar xvf geos-3.13.0.tar
+cd geos-3.13.0/
+sudo ./configure  &&  sudo make  &&  sudo make install
+sudo ldconfig
+
+cd /tmp
+svn co https://svn.osgeo.org/metacrs/proj/branches/4.9//proj/
+cd /tmp/proj/nad
+sudo wget http://download.osgeo.org/proj/proj-datumgrid-1.8.zip
+unzip -o -q proj-datumgrid-1.8.zip 
+cd /tmp/proj/
+sudo ./configure && sudo make && sudo make install && sudo ldconfig
+
+svn co https://svn.osgeo.org/gdal/branches/2.2/gdal/ gdal_stable
+cd gdal_stable
+
+CFLAGS="-g -Wall" LDFLAGS="-s" ./configure \
+--with-png=internal \
+--with-libtiff=internal \
+--with-geotiff=internal \
+--with-jpeg=internal \
+--with-gif=internal \
+--with-ecw=no \
+--with-expat=yes \
+--with-sqlite3=yes \
+--with-geos=yes \
+--with-python \
+--with-libz=internal \
+--with-netcdf \
+--with-threads=yes \
+--without-grass  \
+--without-ogdi \
+--with-xerces=yes
+
+sudo make -j2 && sudo make install && sudo ldconfig
+
+pip install numpy 
+pip install biopython 
+pip install pandas 
+pip install treetime
+pip install Cython
+
+cd /usr/local
+sudo mkdir biotools
+sudo chmod 777 biotools
+cd biotools/
+
+git clone --depth=1 https://github.com/beagle-dev/beagle-lib.git
+cd beagle-lib
+mkdir build
+cd build
+sudo cmake ..
+sudo make install
+
+wget https://github.com/beast-dev/beast-mcmc/releases/download/v1.10.4/BEASTv1.10.4.tgz
+tar -xzf BEASTv1.10.4.tgz
+sudo rm -rf BEASTv1.10.4.tgz
+
+wget https://ormbunkar.se/aliview/downloads/linux/linux-version-1.28/aliview.install.run
+sudo chmod +x aliview.install.run
+sudo ./aliview.install.run
+
+git clone https://github.com/ablab/quast.git
+cd quast
+sudo python3 setup.py install_full
+
+wget https://github.com/rambaut/figtree/releases/download/v1.4.4/FigTree_v1.4.4.tgz
+tar -xzf FigTree_v1.4.4.tgz
+sudo rm -rf FigTree_v1.4.4.tgz
+
+wget https://github.com/shenwei356/seqkit/releases/download/v2.8.2/seqkit_linux_arm64.tar.gz
+tar -xzvf seqkit_linux_arm64.tar.gz
+sudo rm -rf seqkit_linux_arm64.tar.gz
+
+sudo apt update
+                         
+sudo apt upgrade
+sudo apt autoremove
+
+sudo apt update
+sudo apt install libuv1-dev
+sudo apt install build-essential pkg-config

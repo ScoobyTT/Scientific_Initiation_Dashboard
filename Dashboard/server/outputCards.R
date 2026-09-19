@@ -2,25 +2,21 @@ dados_filtradosC <- reactive({
   req(input$uf_filter)
   
   dados <- cards %>%
-    mutate(ano = as.integer(format(months, "%Y")))
+    mutate(ano = as.integer(format(as.Date(months), "%Y")))
   
   if (input$uf_filter != "Todos") {
-    dados <- cards %>%
-      filter(abbrev_state == input$uf_filter)%>%
-      mutate(ano = as.integer(format(as.Date(months), "%Y")))
+    dados <- dados %>%
+      filter(abbrev_state == input$uf_filter)
   }
   
   if (!is.null(input$ano_filter)) {
-    
     dados <- dados %>%
       filter(
         ano >= input$ano_filter[1],
         ano <= input$ano_filter[2]
       )
   }
-  print(head(dados))
-  print(input$ano_filter)
-  print(head(dados))
+  
   dados
 })
 # ---- VALUE BOXES / CARDS ----

@@ -13,9 +13,8 @@ dados_filtrados_plot1 <- reactive({
   
   if (!is.null(input$ano_filter)) {
     dados_plot1 <- dados_plot1 %>%
-      filter(as.integer(year(months)) >= input$ano_filter[1],
-             as.integer(year(months)) <= input$ano_filter[2])
-  
+      filter(year(months) >= input$ano_filter[1],
+             year(months) <= input$ano_filter[2])
   }
   
   dados_plot1 
@@ -52,12 +51,12 @@ output$scatterplot <- renderPlot({
 dados_filtrados_pred <- reactive({
   req(input$uf_filter)
   
-  dados <- plot1_pred
+  dados <- fread("DENGUE_PIPELINE 2 DEPLOY EMPTY (1)(1)/DENGUE_PIPELINE 2 DEPLOY EMPTY/apps/todas_predicoes.csv")
   
   if (input$uf_filter != "Todos") {
-    dados <- dados %>% filter(abbrev_state == input$uf_filter)
+    dados <- dados %>% filter(abbrav_state == input$uf_filter)
   } else {
-    dados <- dados %>% filter(abbrev_state == "BR")
+    dados <- dados %>% filter(abbrav_state == "BR")
   }
   
   dados
@@ -66,22 +65,24 @@ output$scatterplotPrev <- renderPlot({
   dados <- dados_filtrados_pred()
   
   validate(need(nrow(dados) > 0, "Nenhum dado disponível."))
-  #cases
-  dados$week <- factor(dados$week, levels = sort(unique(dados$week)))
-  names(plot1_pred)
-  ggplot(dados, aes(x = week, y = cases, color = source, group = source)) +
+  #cases source 
+  dados$Week <- factor(dados$Week, levels = sort(unique(dados$Week)))
+  #names(plot1_pred)
+  dados_pred <- subset(dados, Segment == "prediction")
+  print(dados_pred[, c("Week", "Smoothed_Cases", "Lower_Bound", "Upper_Bound")])
+  ggplot(dados, aes(x = Week, y = Smoothed_Cases, color = Segment, group = Segment)) +
     geom_line(linewidth = 1) +
     geom_point(size = 2) +
-    geom_ribbon(data = subset(dados, source == "predicted"),
-                aes(ymin = lower_bound, ymax = upper_bound, fill = "predicted", group = 1),
+    geom_ribbon(data = subset(dados, Segment == "prediction"),
+                aes(ymin = Lower_Bound, ymax = Upper_Bound, fill = "prediction", group = 1),
                 alpha = 0.3, color = NA) +
-    scale_x_discrete(breaks = levels(dados$week)[seq(1, nlevels(dados$week), by = 10)]) +
+    scale_x_discrete(breaks = levels(dados$Week)[seq(1, nlevels(dados$Week), by = 10)]) +
     scale_color_manual(values = c(
-      "previous_not_used_data" = "red",
-      "used_input_data" = "blue",
-      "predicted" = "black"
+      "previous" = "red",
+      "input" = "blue",
+      "prediction" = "black"
     )) +
-    scale_fill_manual(values = c("predicted" = "gray")) +
+    scale_fill_manual(values = c("prediction" = "gray")) +
     labs(x = "Semana Epidemiológica",
          y = "Casos semanais de dengue",
          color = "Fonte",

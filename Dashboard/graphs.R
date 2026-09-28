@@ -36,7 +36,6 @@ dengue_data <- dengue_data %>%
   )
 
 dengue_data$months <- paste0(format(dengue_data$Noti_Date, "%Y-%m"),"-01")
-dengue_conf$State <- as.numeric(dengue_conf$State)
 
 dengue_conf <- dengue_conf %>%
   left_join(
@@ -303,14 +302,14 @@ pop2022 <- ribge::populacao_municipios(2022)
 pop2023 <- ribge::populacao_municipios(2022)
 pop2024 <- ribge::populacao_municipios(2024)
 pop2025 <- ribge::populacao_municipios(2025)
-#pop2026 <- ribge::populacao_municipios(2026)
+pop2026 <- ribge::populacao_municipios(2025)
 
 
 pop_list <- list(
   pop2014, pop2015, pop2016, pop2017, pop2018, pop2019,
-  pop2020, pop2021, pop2022, pop2023, pop2024, pop2025
+  pop2020, pop2021, pop2022, pop2023, pop2024, pop2025, pop2026
 )
-years <- 2014:2025
+years <- 2014:2026
 
 # Por estado
 pop_estados <- bind_rows(
@@ -325,6 +324,35 @@ pop_brasil <- pop_estados |>
   summarise(populacao = sum(populacao, na.rm = TRUE), .groups = "drop") |>
   mutate(uf = "BR")
 
+
+pop_estados <- rbind(pop_estados, pop_brasil)
+
+plot_diagrama_t <- plot_diagrama %>%
+  pivot_wider(
+    id_cols     = c(uf, week),
+    names_from  = year,
+    values_from = New_Cases,
+    names_prefix = "casos_",
+    values_fill  = 0,
+    values_fn    = sum
+  )
+
+
+pop_estados_t <- pop_estados %>%
+  distinct(uf, ano, populacao) %>%   # remove linhas 100% repetidas
+  pivot_wider(
+    id_cols      = uf,
+    names_from   = ano,
+    values_from  = populacao,
+    names_prefix = "pop_",
+    values_fn    = first
+  )
+
+pop_estados_t$pop_2014
+
+plot_diagrama_final <- left_join(plot_diagrama_t, pop_estados_t, by = "uf")
+
+write_tsv(plot_diagrama_final, "plot4_new.tsv")
 
 ####################################################### SISTEMA DE PREDICAO
 
@@ -375,7 +403,7 @@ conf_pred_final_v1 <- rbind(
 conf_pred_final_v1[2,1] <- "Pais"
 conf_pred_final_v1[1,1] <- "0"
 write.table(conf_pred_final_v1,
-          "/data/input/arquivo_tratamento.csv",
+          "/home/christian/Scientific_Initiation_Dashboard/Dashboard/input_old/predicoes_2026/arquivo_tratamento.csv",
           sep = ",",
           row.names = FALSE,
           col.names = FALSE,

@@ -28,7 +28,7 @@ dir.create(dir_tsv, recursive = TRUE, showWarnings = FALSE)
 
 SUF <- c("DENG")
 tam <- 63
-mypath <- B_par
+mypath <- B_fin
 
 # Confirma que here() e mypath estão apontando pro lugar certo antes de seguir
 cat("here():", here::here(), "\n")
@@ -240,7 +240,7 @@ baseFinal <- baseFinal %>%
     by = c("State" = "code_state")
   )
 
-if (confirmados == TRUE){
+if (confirmados == FALSE){
   write.table(baseFinal, file.path(dir, "/2014-2025_DENGUE_CONFIRMADOS_dash_new.tsv"), sep = "\t", row.names = FALSE)
 }else{
   write.table(baseFinal, file.path(dir, "/2014-2025_DENGUE_NOTIFICADOS_dash_new.tsv"), sep = "\t", row.names = FALSE)
@@ -344,13 +344,16 @@ for (file in t){
   gc()  # devolve a RAM pro sistema
 }
 newData <- dplyr::bind_rows(lista_newData)
+#pop2024 <- ribge::populacao_municipios(2024)
+#estado <- readRDS(file.path(dir, "estados.rds"))
+
+# Esse bloco que falta, antes do join final:
+meso_regiao <- read_xls(file.path(dir, "regioes_geograficas_composicao_por_municipios_2017_20180911.xls"))
+meso_regiao_pop <- left_join(pop2024, meso_regiao, by = c("cod_municipio" = "CD_GEOCODI"))
 
 newData <- newData %>%
-  mutate(City = as.character(City)) %>%
-  left_join(
-    pop2024 %>% mutate(cod_munic6 = as.character(cod_munic6)),
-    by = c("City" = "cod_munic6")
-  )
+  mutate(State = as.numeric(State)) %>%
+  left_join(meso_regiao_pop, by = c("State" = "codigo_uf", "City" = "cod_munic6"))
 #newData <- left_join(newData, pop2024, by = c("City" = "cod_municipio"))
 
 newData <-newData %>%

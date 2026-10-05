@@ -199,19 +199,19 @@ for(i in startFile:length(myfiles)){
   
   if ("total" %in% colnames(temp)) {
     temp_agre <- temp %>%
-      group_by(DT_NOTIFIC, SEM_NOT, weekStart, SG_UF_NOT, ID_MUNICIP, NU_IDADE_N, CS_SEXO, CS_RACA) %>%
+      group_by(DT_NOTIFIC, SEM_NOT, weekStart, SG_UF_NOT, ID_MUNICIP, NU_IDADE_N, CS_SEXO, CS_RACA, EVOLUCAO) %>%
       dplyr::summarise(new_cases = sum(total)) %>%
       # mutate(cum_cases = cumsum(new_cases)) %>%
       drop_na()
   }else{
     temp_agre <- temp %>%
-      group_by(DT_NOTIFIC, SEM_NOT, weekStart, SG_UF_NOT, ID_MUNICIP, NU_IDADE_N, CS_SEXO, CS_RACA) %>%
+      group_by(DT_NOTIFIC, SEM_NOT, weekStart, SG_UF_NOT, ID_MUNICIP, NU_IDADE_N, CS_SEXO, CS_RACA, EVOLUCAO) %>%
       dplyr::summarise(new_cases = n()) %>%
       # mutate(cum_cases = cumsum(new_cases)) %>%
       drop_na()
   }
   
-  names(temp_agre) <- c("Noti_Date", "Noti_Week", "weekStart", "State", "City", "Age_temp", "Sex", "Race_Colour", "New_Cases")
+  names(temp_agre) <- c("Noti_Date", "Noti_Week", "weekStart", "State", "City", "Age_temp", "Sex", "Race_Colour", "New_Cases", "EVOLUCAO")
   temp_agre$Noti_Date <- as.Date(temp_agre$Noti_Date)
   temp_agre$Race_Colour <- factor(temp_agre$Race_Colour, levels = c(1, 2, 3, 4, 5, 9), labels = c("Branca", "Preta", "Amarela", "Parda", "Indigena", "Ignorado"))
   temp_agre$Age <- ifelse(nchar(temp_agre$Age_temp) == 2, 
@@ -220,7 +220,7 @@ for(i in startFile:length(myfiles)){
                                  as.numeric(substr(temp_agre$Age_temp, 3, 4)), 0))
   temp_agre_final <- temp_agre %>%
     ungroup() %>%
-    dplyr::select(Noti_Date, Noti_Week, weekStart, State, City, New_Cases, Age, Sex, Race_Colour)
+    dplyr::select(Noti_Date, Noti_Week, weekStart, State, City, New_Cases, Age, Sex, Race_Colour, EVOLUCAO)
   
   temp_agre_final$City <- as.numeric(temp_agre_final$City)
   temp_agre_final$City <- as.numeric(temp_agre_final$City)

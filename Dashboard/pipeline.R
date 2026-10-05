@@ -168,12 +168,11 @@ anos <- as.numeric(str_extract(myfiles, "\\d+"))
 myfiles <- myfiles[anos >= 13]
 print("teste: pega bahia!")
 calendario <- fread(file.path(dir, "sinan_calendario.txt"))
-print("teste: pega meu bahiaa!!!")
+print("teste: pega, meu bahiaa!!!")
 
 pop2024 <- ribge::populacao_municipios(2024)
 meso_regiao <- read_xls(file.path(dir, "regioes_geograficas_composicao_por_municipios_2017_20180911.xls"))
 meso_regiao_pop <- left_join(pop2024, meso_regiao, by = c("cod_municipio"="CD_GEOCODI"))
-baseFinal <- left_join(newBahia, meso_regiao_pop, by=c("State"="codigo_uf", "City"="cod_munic6"))
 estado <- readRDS(file.path(dir, "estados.rds"))
 
 AUX <- 0
@@ -231,6 +230,7 @@ for(i in startFile:length(myfiles)){
 }
 
 newBahia <- dplyr::bind_rows(lista_bahia)
+baseFinal <- left_join(newBahia, meso_regiao_pop, by=c("State"="codigo_uf", "City"="cod_munic6"))
 
 #depois de baixado, coverte e consolida os arquivos
 newBahia$State=as.numeric(newBahia$State)

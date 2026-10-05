@@ -169,7 +169,16 @@ myfiles <- myfiles[anos >= 13]
 print("teste: pega bahia!")
 calendario <- fread(file.path(dir, "sinan_calendario.txt"))
 print("teste: pega meu bahiaa!!!")
-confirmados <- TRUE 
+
+pop2024 <- ribge::populacao_municipios(2024)
+meso_regiao <- read_xls(file.path(dir, "regioes_geograficas_composicao_por_municipios_2017_20180911.xls"))
+meso_regiao_pop <- left_join(pop2024, meso_regiao, by = c("cod_municipio"="CD_GEOCODI"))
+baseFinal <- left_join(newBahia, meso_regiao_pop, by=c("State"="codigo_uf", "City"="cod_munic6"))
+estado <- readRDS(file.path(dir, "estados.rds"))
+
+AUX <- 0
+repeat{
+confirmados <- (AUX == 0)
 lista_bahia <- list()
 for(i in startFile:length(myfiles)){
   dir.create(file.path(dir, "tsv"), recursive = TRUE, showWarnings = FALSE)
@@ -226,26 +235,24 @@ newBahia <- dplyr::bind_rows(lista_bahia)
 #depois de baixado, coverte e consolida os arquivos
 newBahia$State=as.numeric(newBahia$State)
 
-pop2024 <- ribge::populacao_municipios(2024)
-meso_regiao <- read_xls(file.path(dir, "regioes_geograficas_composicao_por_municipios_2017_20180911.xls"))
-
-meso_regiao_pop <- left_join(pop2024, meso_regiao, by = c("cod_municipio"="CD_GEOCODI"))
-
-baseFinal <- left_join(newBahia, meso_regiao_pop, by=c("State"="codigo_uf", "City"="cod_munic6"))
-estado <- readRDS(file.path(dir, "estados.rds"))
-
 baseFinal <- baseFinal %>%
   left_join(
     estado %>% sf::st_drop_geometry() %>% select(code_state, abbrev_state, name_state, name_region),
     by = c("State" = "code_state")
   )
 
-if (confirmados == FALSE){
+if (confirmados == TRUE){
   write.table(baseFinal, file.path(dir, "/2014-2025_DENGUE_CONFIRMADOS_dash_new.tsv"), sep = "\t", row.names = FALSE)
 }else{
   write.table(baseFinal, file.path(dir, "/2014-2025_DENGUE_NOTIFICADOS_dash_new.tsv"), sep = "\t", row.names = FALSE)
 }
+if(AUX == 1) break 
+AUX = AUX + 1  
 
+}
+  
+
+' 
 #sla <- fread("/home/pimat-08/GAARA-II/app/input/2025_DENGUE_CONFIRMADOS_dash_new.tsv")
 #############################################################
 #consolidando arquvivo final q eu preciso
@@ -368,7 +375,7 @@ if (confirmados == TRUE){
   write.table(newData, file.path(dir, "/2000-2025_DENGUE_NOTIFICADOS_new_ze.tsv"), sep = "\t", row.names = FALSE)
 }
 sla <- fread("app/input/2000-2025_DENGUE_NOTIFICADOS_new_ze.tsv")
-'  
+  
 calendario <- fread("input/sinan_calendario.txt")
 file <- "DENGBR20"
 base <- st_read(file.path(mypath, paste0(file, ".dbf")))
